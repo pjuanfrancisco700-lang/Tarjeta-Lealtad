@@ -496,6 +496,90 @@
       line-height: 1.5;
     }
 
+    .register-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .divider-text {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 2px 0;
+    }
+
+    .link-btn {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      padding: 6px 0 0;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 33, 28, 0.28);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px 12px max(16px, env(safe-area-inset-bottom));
+      z-index: 50;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: var(--maxw);
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(255,255,255,0.84);
+      box-shadow: 0 24px 70px rgba(42,33,28,0.16);
+      border-radius: 30px;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.05em;
+    }
+
+    .modal-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.8);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .modal-actions {
+      display: grid;
+      gap: 10px;
+    }
+
     @media (max-width: 380px) {
       .hero h1, .register-title { font-size: 29px; }
       .cups { gap: 8px; }
@@ -541,7 +625,11 @@
             <input id="correo" type="email" placeholder="Opcional si usas teléfono" />
           </div>
 
-          <button class="primary-btn" id="btnCrearCuenta">Crear cuenta</button>
+          <div class="register-actions">
+            <button class="primary-btn" id="btnCrearCuenta">Crear cuenta</button>
+            <div class="divider-text">o</div>
+            <button class="secondary-btn" id="btnYaTengoCuenta">Ya tengo cuenta</button>
+          </div>
 
           <div id="registerFeedback" class="feedback error hidden"></div>
 
@@ -550,6 +638,33 @@
           </p>
         </div>
       </section>
+
+      <div id="loginModal" class="modal-overlay hidden">
+        <div class="modal-card">
+          <div class="modal-head">
+            <div>
+              <p class="eyebrow" style="margin-bottom:8px;">Ingresar</p>
+              <h3>Recupera tu tarjeta</h3>
+              <p>Ingresa tu teléfono o correo para recuperar tu cuenta en este dispositivo.</p>
+            </div>
+            <button class="modal-close" id="btnCerrarModal" type="button">✕</button>
+          </div>
+
+          <div class="field">
+            <label for="loginIdCliente">Teléfono o correo</label>
+            <input id="loginIdCliente" type="text" placeholder="Tu teléfono o correo" />
+          </div>
+
+          <div id="loginFeedback" class="feedback error hidden"></div>
+
+          <div class="modal-actions">
+            <button class="primary-btn" id="btnIngresarCuenta">Ingresar</button>
+            <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
+          </div>
+
+          <p class="center-note" style="margin-top:0;">Más adelante se puede conectar también por teléfono o correo desde Apps Script.</p>
+        </div>
+      </div>
 
       <section id="appView" class="screen hidden">
         <div class="topbar">
@@ -686,9 +801,16 @@
     const appView = document.getElementById('appView');
     const registerFeedback = document.getElementById('registerFeedback');
     const btnCrearCuenta = document.getElementById('btnCrearCuenta');
+    const btnYaTengoCuenta = document.getElementById('btnYaTengoCuenta');
+    const btnIngresarCuenta = document.getElementById('btnIngresarCuenta');
+    const btnCerrarModal = document.getElementById('btnCerrarModal');
+    const btnCancelarModal = document.getElementById('btnCancelarModal');
     const btnSalir = document.getElementById('btnSalir');
     const btnRefresh = document.getElementById('btnRefresh');
     const btnBorrarCuenta = document.getElementById('btnBorrarCuenta');
+    const loginModal = document.getElementById('loginModal');
+    const loginFeedback = document.getElementById('loginFeedback');
+    const loginIdCliente = document.getElementById('loginIdCliente');
 
     const state = {
       cliente: null,
@@ -713,6 +835,26 @@
     function showApp() {
       registerView.classList.add('hidden');
       appView.classList.remove('hidden');
+      closeLoginModal();
+    }
+
+    function openLoginModal() {
+      loginModal.classList.remove('hidden');
+      loginFeedback.classList.add('hidden');
+      loginIdCliente.value = '';
+      setTimeout(() => loginIdCliente.focus(), 50);
+    }
+
+    function closeLoginModal() {
+      loginModal.classList.add('hidden');
+      loginFeedback.classList.add('hidden');
+      loginIdCliente.value = '';
+    }
+
+    function showLoginFeedback(message, type = 'error') {
+      loginFeedback.textContent = message;
+      loginFeedback.className = `feedback ${type}`;
+      loginFeedback.classList.remove('hidden');
     }
 
     function saveLocalCliente(cliente) {
@@ -876,8 +1018,21 @@
       }
 
       if (API_URL.includes('PEGAR_AQUI')) {
-        state.cliente = local;
-        state.movimientos = [];
+        const demoCliente = {
+          id_cliente: 'CLT001',
+          nombre: 'Cliente demo',
+          telefono: input,
+          correo: input,
+          puntos: 4,
+          premio_disponible: 'NO',
+          qr_id: 'CLT001',
+          estado: 'ACTIVO'
+        };
+        state.cliente = demoCliente;
+        state.movimientos = [
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' }
+        ];
+        saveLocalCliente(demoCliente);
         renderCliente();
         showApp();
         return;
@@ -891,6 +1046,55 @@
       } catch (error) {
         console.error(error);
         showRegister('No se pudo recuperar la cuenta guardada. Regístrala de nuevo o revisa la API.', 'error');
+      }
+    }
+
+    async function loginExistingClient() {
+      const input = loginIdCliente.value.trim();
+
+      if (!input) {
+        showLoginFeedback('Ingresa tu teléfono o correo para continuar.', 'error');
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        const demoCliente = {
+          id_cliente: id,
+          nombre: 'Cliente demo',
+          telefono: '',
+          correo: '',
+          puntos: 4,
+          premio_disponible: 'NO',
+          qr_id: id,
+          estado: 'ACTIVO'
+        };
+        state.cliente = demoCliente;
+        state.movimientos = [
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: id }
+        ];
+        saveLocalCliente(demoCliente);
+        renderCliente();
+        showApp();
+        return;
+      }
+
+      try {
+        btnIngresarCuenta.disabled = true;
+        btnIngresarCuenta.textContent = 'Ingresando...';
+        // ⚠️ aquí necesitarás adaptar tu Apps Script
+        // ejemplo futuro: action: 'getClientByContact'
+        const data = await apiGet({ action: 'getClient', id: input });
+        if (!data.ok) throw new Error(data.message || 'No se pudo encontrar la cuenta');
+        state.cliente = data.cliente;
+        saveLocalCliente(data.cliente);
+        await loadDashboardMeta();
+        renderCliente();
+        showApp();
+      } catch (error) {
+        showLoginFeedback(error.message || 'No se encontró ninguna cuenta con ese dato.', 'error');
+      } finally {
+        btnIngresarCuenta.disabled = false;
+        btnIngresarCuenta.textContent = 'Ingresar';
       }
     }
 
@@ -963,6 +1167,16 @@
     });
 
     btnCrearCuenta.addEventListener('click', registerClient);
+    btnYaTengoCuenta.addEventListener('click', openLoginModal);
+    btnIngresarCuenta.addEventListener('click', loginExistingClient);
+    btnCerrarModal.addEventListener('click', closeLoginModal);
+    btnCancelarModal.addEventListener('click', closeLoginModal);
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) closeLoginModal();
+    });
+    loginIdCliente.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loginExistingClient();
+    });
 
     btnSalir.addEventListener('click', () => {
       clearLocalCliente();
