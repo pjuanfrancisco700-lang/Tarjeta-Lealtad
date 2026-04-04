@@ -972,8 +972,7 @@
 
       document.getElementById('pointsCount').textContent = Number(c.puntos || 0);
       document.getElementById('goalCount').textContent = state.metaPuntos;
-      document.getElementById('metaId').textContent = `ID: ${safeText(c.id_cliente)}`;
-      document.getElementById('metaEstado').textContent = `Estado: ${safeText(c.estado, 'ACTIVO')}`;
+     
 
       const premioDisponible = String(c.premio_disponible || 'NO').toUpperCase() === 'SI';
       const faltan = Math.max(0, state.metaPuntos - Number(c.puntos || 0));
