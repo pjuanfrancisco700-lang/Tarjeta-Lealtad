@@ -743,9 +743,9 @@
     }
 
     function buildQrData(id) {
-      const targetUrl = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}confirmar.html?id=${encodeURIComponent(id)}`;
-      return `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(targetUrl)}`;
-    }
+  const targetUrl = `https://pjuanfrancisco700-lang.github.io/Confirmar_punto/?id=${encodeURIComponent(id)}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(targetUrl)}`;
+}
 
     function renderCups(points, goal) {
       const cupsGrid = document.getElementById('cupsGrid');
