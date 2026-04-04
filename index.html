@@ -645,14 +645,14 @@
             <div>
               <p class="eyebrow" style="margin-bottom:8px;">Ingresar</p>
               <h3>Recupera tu tarjeta</h3>
-              <p>Ingresa tu teléfono o correo para recuperar tu cuenta en este dispositivo.</p>
+              <p>Ingresa tu teléfono, correo o ID para recuperar tu cuenta en este dispositivo.</p>
             </div>
             <button class="modal-close" id="btnCerrarModal" type="button">✕</button>
           </div>
 
           <div class="field">
-            <label for="loginIdCliente">Teléfono o correo</label>
-            <input id="loginIdCliente" type="text" placeholder="Tu teléfono o correo" />
+            <label for="loginIdCliente">Teléfono, correo o ID</label>
+            <input id="loginIdCliente" type="text" placeholder="Tu teléfono, correo o ID" />
           </div>
 
           <div id="loginFeedback" class="feedback error hidden"></div>
@@ -662,7 +662,7 @@
             <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
           </div>
 
-          <p class="center-note" style="margin-top:0;">Más adelante se puede conectar también por teléfono o correo desde Apps Script.</p>
+          <p class="center-note" style="margin-top:0;">Puedes ingresar con el dato que recuerdes: teléfono, correo o ID del cliente.</p>
         </div>
       </div>
 
@@ -1021,8 +1021,8 @@
         const demoCliente = {
           id_cliente: 'CLT001',
           nombre: 'Cliente demo',
-          telefono: input,
-          correo: input,
+          telefono: '',
+          correo: '',
           puntos: 4,
           premio_disponible: 'NO',
           qr_id: 'CLT001',
@@ -1053,24 +1053,24 @@
       const input = loginIdCliente.value.trim();
 
       if (!input) {
-        showLoginFeedback('Ingresa tu teléfono o correo para continuar.', 'error');
+        showLoginFeedback('Ingresa tu teléfono, correo o ID para continuar.', 'error');
         return;
       }
 
       if (API_URL.includes('PEGAR_AQUI')) {
         const demoCliente = {
-          id_cliente: id,
+          id_cliente: 'CLT001',
           nombre: 'Cliente demo',
-          telefono: '',
-          correo: '',
+          telefono: input,
+          correo: input.includes('@') ? input : '',
           puntos: 4,
           premio_disponible: 'NO',
-          qr_id: id,
+          qr_id: 'CLT001',
           estado: 'ACTIVO'
         };
         state.cliente = demoCliente;
         state.movimientos = [
-          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: id }
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' }
         ];
         saveLocalCliente(demoCliente);
         renderCliente();
@@ -1081,9 +1081,7 @@
       try {
         btnIngresarCuenta.disabled = true;
         btnIngresarCuenta.textContent = 'Ingresando...';
-        // ⚠️ aquí necesitarás adaptar tu Apps Script
-        // ejemplo futuro: action: 'getClientByContact'
-        const data = await apiGet({ action: 'getClient', id: input });
+        const data = await apiGet({ action: 'getClientAny', input });
         if (!data.ok) throw new Error(data.message || 'No se pudo encontrar la cuenta');
         state.cliente = data.cliente;
         saveLocalCliente(data.cliente);
