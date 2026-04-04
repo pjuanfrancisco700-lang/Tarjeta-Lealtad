@@ -13,18 +13,17 @@
       --muted: #7b6e66;
       --line: rgba(60, 40, 25, 0.08);
       --accent: #6f4e37;
-      --accent-soft: #ebe0d3;
       --success: #658f5d;
       --danger: #b85d5d;
       --shadow: 0 14px 36px rgba(42, 33, 28, 0.08);
       --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
       --maxw: 420px;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     html {
       width: 100%;
@@ -36,13 +35,18 @@
     html, body {
       margin: 0;
       padding: 0;
-      background:
-        radial-gradient(circle at top, #fff8f1 0%, var(--bg) 48%, #efe7de 100%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
       min-height: 100dvh;
       overflow-x: hidden;
+      background: radial-gradient(circle at top, #fff8f1 0%, var(--bg) 48%, #efe7de 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
     }
 
     .app-shell {
@@ -68,15 +72,15 @@
     }
 
     .screen {
-      padding: 18px;
-      padding-bottom: calc(28px + env(safe-area-inset-bottom));
+      padding: 14px;
+      padding-bottom: calc(18px + env(safe-area-inset-bottom));
     }
 
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
     .brand {
@@ -110,7 +114,7 @@
       border: 1px solid rgba(255,255,255,0.8);
       box-shadow: var(--shadow);
       border-radius: var(--radius-xl);
-      padding: 18px;
+      padding: 14px;
       backdrop-filter: blur(14px);
     }
 
@@ -126,33 +130,33 @@
       margin: 0 0 10px;
     }
 
-    .hero h1, .register-title {
+    .hero h1,
+    .register-title {
       margin: 0;
-      font-size: 33px;
+      font-size: 29px;
       line-height: 1.02;
       letter-spacing: -0.06em;
     }
 
-    .hero p, .register-sub {
+    .hero p,
+    .register-sub {
       color: var(--muted);
-      margin: 12px 0 0;
-      line-height: 1.5;
-      font-size: 14px;
+      margin: 8px 0 0;
+      line-height: 1.45;
+      font-size: 13px;
     }
 
     .stack {
       display: grid;
-      gap: 14px;
+      gap: 10px;
     }
 
-    .mt-16 { margin-top: 16px; }
     .mt-18 { margin-top: 18px; }
     .mt-20 { margin-top: 20px; }
-    .mt-22 { margin-top: 22px; }
 
     .progress-wrap {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .progress-head {
@@ -164,7 +168,7 @@
 
     .progress-head h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       letter-spacing: -0.04em;
     }
 
@@ -175,24 +179,24 @@
 
     .big-points strong {
       color: var(--text);
-      font-size: 26px;
+      font-size: 22px;
       letter-spacing: -0.05em;
     }
 
     .cups {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      gap: 8px;
     }
 
     .cup {
       aspect-ratio: 1;
-      border-radius: 18px;
+      border-radius: 15px;
       background: rgba(255,255,255,0.72);
       border: 1px solid var(--line);
       display: grid;
       place-items: center;
-      font-size: 22px;
+      font-size: 19px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
       transition: 0.2s ease;
     }
@@ -208,26 +212,33 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 14px 15px;
+      gap: 10px;
+      padding: 11px 13px;
       border-radius: 18px;
       background: linear-gradient(180deg, rgba(111,78,55,0.1), rgba(111,78,55,0.06));
       border: 1px solid rgba(111,78,55,0.1);
     }
 
-    .promo strong { display: block; font-size: 15px; }
-    .promo span { color: var(--muted); font-size: 13px; }
+    .promo strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .promo span {
+      color: var(--muted);
+      font-size: 12px;
+    }
 
     .qr-card {
       text-align: center;
-      padding-top: 22px;
-      padding-bottom: 22px;
+      padding-top: 16px;
+      padding-bottom: 16px;
     }
 
     .qr-box {
-      width: min(100%, 250px);
+      width: min(100%, 190px);
       aspect-ratio: 1;
-      margin: 0 auto 16px;
+      margin: 0 auto 12px;
       background: var(--card-strong);
       border-radius: 24px;
       padding: 14px;
@@ -283,8 +294,14 @@
       border-top: 1px solid var(--line);
     }
 
-    .row-card:first-of-type { border-top: none; padding-top: 0; }
-    .row-card:last-of-type { padding-bottom: 0; }
+    .row-card:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .row-card:last-of-type {
+      padding-bottom: 0;
+    }
 
     .row-left {
       display: flex;
@@ -333,8 +350,8 @@
       width: 100%;
       border: none;
       border-radius: 18px;
-      padding: 16px 18px;
-      font-size: 16px;
+      padding: 14px 16px;
+      font-size: 15px;
       font-weight: 800;
       letter-spacing: -0.02em;
       cursor: pointer;
@@ -359,15 +376,17 @@
       transform: scale(0.985);
     }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
 
     .register {
       min-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - max(18px, env(safe-area-inset-bottom)) - 24px);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 18px;
-      padding: 22px 18px 28px;
+      gap: 12px;
+      padding: 16px 14px 18px;
     }
 
     .register-hero {
@@ -380,9 +399,9 @@
       border: 1px solid rgba(255,255,255,0.82);
       box-shadow: var(--shadow);
       border-radius: 28px;
-      padding: 18px;
+      padding: 14px;
       display: grid;
-      gap: 14px;
+      gap: 10px;
     }
 
     .field {
@@ -401,7 +420,7 @@
       border: 1px solid rgba(60, 40, 25, 0.09);
       background: rgba(255,255,255,0.9);
       border-radius: 16px;
-      padding: 15px 14px;
+      padding: 13px 14px;
       font-size: 15px;
       outline: none;
       color: var(--text);
@@ -441,7 +460,7 @@
     .bottom-nav {
       position: sticky;
       bottom: 0;
-      margin-top: 18px;
+      margin-top: 12px;
       background: rgba(255,255,255,0.76);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.85);
@@ -457,14 +476,14 @@
       border: none;
       background: transparent;
       border-radius: 14px;
-      padding: 10px 8px;
+      padding: 8px 6px;
       cursor: pointer;
       display: grid;
-      gap: 4px;
+      gap: 3px;
       justify-items: center;
       color: var(--muted);
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .nav-btn.active {
@@ -496,7 +515,8 @@
       line-height: 1.5;
     }
 
-    .register-actions {
+    .register-actions,
+    .modal-actions {
       display: grid;
       gap: 10px;
     }
@@ -506,17 +526,6 @@
       font-size: 12px;
       color: var(--muted);
       margin: 2px 0;
-    }
-
-    .link-btn {
-      border: none;
-      background: transparent;
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      padding: 6px 0 0;
-      cursor: pointer;
     }
 
     .modal-overlay {
@@ -575,18 +584,37 @@
       flex-shrink: 0;
     }
 
-    .modal-actions {
-      display: grid;
-      gap: 10px;
-    }
-
     @media (max-width: 380px) {
-      .hero h1, .register-title { font-size: 29px; }
-      .cups { gap: 8px; }
-      .cup { border-radius: 15px; font-size: 19px; }
-      .screen { padding: 15px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
-      .register { padding: 18px 15px calc(24px + env(safe-area-inset-bottom)); }
-      .phone { border-radius: 26px; }
+      .hero h1,
+      .register-title {
+        font-size: 26px;
+      }
+
+      .cups {
+        gap: 7px;
+      }
+
+      .cup {
+        border-radius: 14px;
+        font-size: 17px;
+      }
+
+      .screen {
+        padding: 12px;
+        padding-bottom: calc(18px + env(safe-area-inset-bottom));
+      }
+
+      .register {
+        padding: 14px 12px calc(18px + env(safe-area-inset-bottom));
+      }
+
+      .phone {
+        border-radius: 26px;
+      }
+
+      .qr-box {
+        width: min(100%, 168px);
+      }
     }
   </style>
 </head>
@@ -604,38 +632,29 @@
           <div class="mt-18"></div>
           <p class="eyebrow">Tarjeta digital</p>
           <h1 class="register-title">Tu café también puede premiarte.</h1>
-          <p class="register-sub">
-            Regístrate una sola vez, guarda tu tarjeta en este celular y acumula visitas para ganar tu café gratis.
-          </p>
+          <p class="register-sub">Regístrate una sola vez, guarda tu tarjeta en este celular y acumula visitas para ganar tu café gratis.</p>
         </div>
 
         <div class="register-card">
           <div class="field">
             <label for="nombre">Nombre</label>
-            <input id="nombre" type="text" placeholder="Tu nombre" />
+            <input id="nombre" type="text" placeholder="Tu nombre" autocomplete="name" />
           </div>
 
           <div class="field">
-            <label for="telefono">Teléfono</label>
-            <input id="telefono" type="tel" placeholder="Opcional si usas correo" />
-          </div>
-
-          <div class="field">
-            <label for="correo">Correo</label>
-            <input id="correo" type="email" placeholder="Opcional si usas teléfono" />
+            <label for="contacto">Teléfono o correo</label>
+            <input id="contacto" type="text" placeholder="Tu teléfono o correo" autocomplete="email tel" inputmode="email" />
           </div>
 
           <div class="register-actions">
-            <button class="primary-btn" id="btnCrearCuenta">Crear cuenta</button>
+            <button class="primary-btn" id="btnCrearCuenta" type="button">Crear cuenta</button>
             <div class="divider-text">o</div>
-            <button class="secondary-btn" id="btnYaTengoCuenta">Ya tengo cuenta</button>
+            <button class="secondary-btn" id="btnYaTengoCuenta" type="button">Ya tengo cuenta</button>
           </div>
 
           <div id="registerFeedback" class="feedback error hidden"></div>
 
-          <p class="register-note">
-            Tu cuenta quedará guardada en este dispositivo para que la próxima vez abras la app y veas directo tu tarjeta.
-          </p>
+          <p class="register-note">Tu cuenta quedará guardada en este dispositivo para que la próxima vez abras la app y veas directo tu tarjeta.</p>
         </div>
       </section>
 
@@ -652,13 +671,13 @@
 
           <div class="field">
             <label for="loginIdCliente">Teléfono, correo o ID</label>
-            <input id="loginIdCliente" type="text" placeholder="Tu teléfono, correo o ID" />
+            <input id="loginIdCliente" type="text" placeholder="Tu teléfono, correo o ID" autocomplete="username" />
           </div>
 
           <div id="loginFeedback" class="feedback error hidden"></div>
 
           <div class="modal-actions">
-            <button class="primary-btn" id="btnIngresarCuenta">Ingresar</button>
+            <button class="primary-btn" id="btnIngresarCuenta" type="button">Ingresar</button>
             <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
           </div>
 
@@ -672,7 +691,7 @@
             <div class="brand-badge">☕</div>
             <div>Café Urbano</div>
           </div>
-          <button class="icon-btn" id="btnSalir" title="Cerrar sesión local">↺</button>
+          <button class="icon-btn" id="btnSalir" title="Cerrar sesión local" type="button">↺</button>
         </div>
 
         <div id="tabHome" class="tab-panel stack">
@@ -710,16 +729,14 @@
               <img id="qrImage" alt="QR del cliente" />
             </div>
             <strong style="display:block; font-size:18px; letter-spacing:-0.03em;">Muéstralo al finalizar tu compra</strong>
-            <p class="muted">
-              El encargado lo escanea, valida el punto y tu progreso se actualiza en la tarjeta.
-            </p>
+            <p class="muted">El encargado lo escanea, valida el punto y tu progreso se actualiza en la tarjeta.</p>
           </div>
         </div>
 
         <div id="tabMovimientos" class="tab-panel stack hidden">
           <div class="section-title">
             <h3>Movimientos recientes</h3>
-            <button class="mini-link" id="btnRefresh">Actualizar</button>
+            <button class="mini-link" id="btnRefresh" type="button">Actualizar</button>
           </div>
 
           <div class="card">
@@ -776,24 +793,20 @@
             </div>
           </div>
 
-          <button class="secondary-btn" id="btnBorrarCuenta">Borrar cuenta de este dispositivo</button>
+          <button class="secondary-btn" id="btnBorrarCuenta" type="button">Borrar cuenta de este dispositivo</button>
           <p class="center-note">Esto solo elimina la sesión local del teléfono. No borra el cliente en la base de datos.</p>
         </div>
 
         <nav class="bottom-nav">
-          <button class="nav-btn active" data-tab="tabHome">🏠<span>Inicio</span></button>
-          <button class="nav-btn" data-tab="tabMovimientos">🕘<span>Movimientos</span></button>
-          <button class="nav-btn" data-tab="tabPerfil">👤<span>Perfil</span></button>
+          <button class="nav-btn active" data-tab="tabHome" type="button">🏠<span>Inicio</span></button>
+          <button class="nav-btn" data-tab="tabMovimientos" type="button">🕘<span>Movimientos</span></button>
+          <button class="nav-btn" data-tab="tabPerfil" type="button">👤<span>Perfil</span></button>
         </nav>
       </section>
     </div>
   </div>
 
   <script>
-    /*
-      CONFIGURA TU WEB APP DE APPS SCRIPT AQUÍ
-      Ejemplo: const API_URL = 'https://script.google.com/macros/s/XXXXXXXX/exec';
-    */
     const API_URL = 'https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
     const STORAGE_KEY = 'tarjetaLealtadCliente';
 
@@ -811,6 +824,7 @@
     const loginModal = document.getElementById('loginModal');
     const loginFeedback = document.getElementById('loginFeedback');
     const loginIdCliente = document.getElementById('loginIdCliente');
+    const contactoInput = document.getElementById('contacto');
 
     const state = {
       cliente: null,
@@ -823,6 +837,8 @@
     function showRegister(message = '', type = 'error') {
       registerView.classList.remove('hidden');
       appView.classList.add('hidden');
+      closeLoginModal();
+
       if (message) {
         registerFeedback.textContent = message;
         registerFeedback.className = `feedback ${type}`;
@@ -895,11 +911,20 @@
       return `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(targetUrl)}`;
     }
 
+    function parseContacto(contacto) {
+      const value = String(contacto || '').trim();
+      return {
+        telefono: value && !value.includes('@') ? value : '',
+        correo: value && value.includes('@') ? value : ''
+      };
+    }
+
     function renderCups(points, goal) {
       const cupsGrid = document.getElementById('cupsGrid');
       cupsGrid.innerHTML = '';
       const total = Math.max(goal, 10);
-      for (let i = 1; i <= total; i++) {
+
+      for (let i = 1; i <= total; i += 1) {
         const item = document.createElement('div');
         item.className = `cup ${i <= points ? 'filled' : ''}`;
         item.textContent = '☕';
@@ -928,19 +953,17 @@
 
       state.movimientos.forEach((mov) => {
         const row = document.createElement('div');
-        row.className = 'row-card';
         const isSuma = String(mov.tipo || '').toUpperCase() === 'SUMA';
-        const tipoTexto = isSuma ? 'Punto agregado' : 'Canje de recompensa';
-        const pillClass = isSuma ? 'pill' : 'pill';
+        row.className = 'row-card';
         row.innerHTML = `
           <div class="row-left">
             <div class="row-icon">${isSuma ? '☕' : '🎁'}</div>
             <div>
-              <strong>${tipoTexto}</strong>
+              <strong>${isSuma ? 'Punto agregado' : 'Canje de recompensa'}</strong>
               <p>${formatDate(mov.fecha)}</p>
             </div>
           </div>
-          <div class="${pillClass}">${isSuma ? '+1 punto' : 'Canje'}</div>
+          <div class="pill">${isSuma ? '+1 punto' : 'Canje'}</div>
         `;
         container.appendChild(row);
       });
@@ -1003,7 +1026,9 @@
       try {
         const data = await apiGet({ action: 'getDashboard' });
         if (data.ok && data.dashboard) {
-          state.movimientos = (data.dashboard.ultimos_movimientos || []).filter(m => String(m.id_cliente || '') === String(state.cliente?.id_cliente || ''));
+          state.movimientos = (data.dashboard.ultimos_movimientos || []).filter(
+            (m) => String(m.id_cliente || '') === String(state.cliente?.id_cliente || '')
+          );
         }
       } catch (err) {
         console.warn('No se pudieron cargar movimientos.', err);
@@ -1061,7 +1086,7 @@
         const demoCliente = {
           id_cliente: 'CLT001',
           nombre: 'Cliente demo',
-          telefono: input,
+          telefono: input.includes('@') ? '' : input,
           correo: input.includes('@') ? input : '',
           puntos: 4,
           premio_disponible: 'NO',
@@ -1098,16 +1123,16 @@
 
     async function registerClient() {
       const nombre = document.getElementById('nombre').value.trim();
-      const telefono = document.getElementById('telefono').value.trim();
-      const correo = document.getElementById('correo').value.trim();
+      const contacto = contactoInput.value.trim();
+      const { telefono, correo } = parseContacto(contacto);
 
       if (!nombre) {
         showRegister('Ingresa tu nombre para crear la cuenta.', 'error');
         return;
       }
 
-      if (!telefono && !correo) {
-        showRegister('Ingresa un teléfono o un correo para continuar.', 'error');
+      if (!contacto) {
+        showRegister('Ingresa tu teléfono o correo para continuar.', 'error');
         return;
       }
 
@@ -1153,14 +1178,21 @@
     }
 
     function handleNav(tabId) {
-      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-panel').forEach((el) => el.classList.add('hidden'));
       document.getElementById(tabId).classList.remove('hidden');
-      document.querySelectorAll('.nav-btn').forEach(btn => {
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
     }
 
-    document.querySelectorAll('.nav-btn').forEach(btn => {
+    function runSelfTests() {
+      console.assert(parseContacto('55554444').telefono === '55554444', 'Debe detectar teléfono');
+      console.assert(parseContacto('hola@correo.com').correo === 'hola@correo.com', 'Debe detectar correo');
+      console.assert(parseContacto('').telefono === '' && parseContacto('').correo === '', 'Vacío debe regresar vacío');
+      console.assert(safeText('', 'x') === 'x', 'safeText debe usar fallback');
+    }
+
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
       btn.addEventListener('click', () => handleNav(btn.dataset.tab));
     });
 
@@ -1169,11 +1201,17 @@
     btnIngresarCuenta.addEventListener('click', loginExistingClient);
     btnCerrarModal.addEventListener('click', closeLoginModal);
     btnCancelarModal.addEventListener('click', closeLoginModal);
+
     loginModal.addEventListener('click', (e) => {
       if (e.target === loginModal) closeLoginModal();
     });
+
     loginIdCliente.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') loginExistingClient();
+    });
+
+    contactoInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') registerClient();
     });
 
     btnSalir.addEventListener('click', () => {
@@ -1202,6 +1240,7 @@
       }
     });
 
+    runSelfTests();
     hydrateClientApp();
   </script>
 </body>
