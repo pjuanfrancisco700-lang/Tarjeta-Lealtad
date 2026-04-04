@@ -699,6 +699,10 @@
             <p class="eyebrow">Tu tarjeta</p>
             <h1 id="saludoNombre">Hola, cliente</h1>
             <p id="heroText">Acumula 10 puntos y gana un café gratis.</p>
+            <div class="small-meta">
+              <span class="tiny-pill" id="metaId">ID: —</span>
+              <span class="tiny-pill" id="metaEstado">Estado: Activo</span>
+            </div>
           </div>
 
           <div class="card progress-wrap">
@@ -710,6 +714,13 @@
               <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
             </div>
             <div class="cups" id="cupsGrid"></div>
+            <div class="promo">
+              <div>
+                <strong id="promoTitle">Promoción base</strong>
+                <span id="promoSubtitle">Acumula 10 puntos y gana un café gratis.</span>
+              </div>
+              <div style="font-size:26px">🎁</div>
+            </div>
           </div>
 
           <div class="card qr-card">
@@ -970,6 +981,8 @@
 
       document.getElementById('pointsCount').textContent = Number(c.puntos || 0);
       document.getElementById('goalCount').textContent = state.metaPuntos;
+      document.getElementById('metaId').textContent = `ID: ${safeText(c.id_cliente)}`;
+      document.getElementById('metaEstado').textContent = `Estado: ${safeText(c.estado, 'ACTIVO')}`;
 
       const premioDisponible = String(c.premio_disponible || 'NO').toUpperCase() === 'SI';
       const faltan = Math.max(0, state.metaPuntos - Number(c.puntos || 0));
@@ -981,6 +994,11 @@
       document.getElementById('faltanText').textContent = premioDisponible
         ? 'Ya puedes pedir tu recompensa en caja.'
         : `Te faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'} para tu premio.`;
+
+      document.getElementById('promoTitle').textContent = premioDisponible ? 'Premio disponible' : 'Promoción base';
+      document.getElementById('promoSubtitle').textContent = premioDisponible
+        ? `Muéstrale tu tarjeta al encargado para canjear tu ${state.recompensa.toLowerCase()}.`
+        : `Acumula ${state.metaPuntos} puntos y gana un ${state.recompensa.toLowerCase()}.`;
 
       document.getElementById('perfilPremio').textContent = premioDisponible
         ? `${state.recompensa} disponible`
@@ -998,175 +1016,232 @@
     }
 
     async function loadClientFromServer(id) {
-      const data = await apiGet({ action: 'obtenerCliente', id });
-      if (!data.ok || !data.cliente) {
-        throw new Error(data.error || 'No se pudo cargar el cliente');
-      }
-
-      const raw = data.cliente;
-      const contacto = parseContacto(raw.contacto || '');
-      state.cliente = {
-        nombre: safeText(raw.nombre, 'cliente'),
-        telefono: safeText(raw.telefono || contacto.telefono, ''),
-        correo: safeText(raw.correo || contacto.correo, ''),
-        id_cliente: safeText(raw.id_cliente),
-        qr_id: safeText(raw.qr_id || raw.id_cliente),
-        puntos: Number(raw.puntos || 0),
-        estado: safeText(raw.estado, 'ACTIVO'),
-        premio_disponible: safeText(raw.premio_disponible, 'NO')
-      };
-
-      state.metaPuntos = Number(data.metaPuntos || 10);
-      state.recompensa = safeText(data.recompensa, 'Café gratis');
-      state.negocio = safeText(data.negocio, 'Café Urbano');
-      state.movimientos = Array.isArray(data.movimientos) ? data.movimientos : [];
-
-      renderCliente();
-      showApp();
-      saveLocalCliente({ id_cliente: state.cliente.id_cliente });
+      const data = await apiGet({ action: 'getClient', id });
+      if (!data.ok) throw new Error(data.message || 'No se pudo cargar el cliente');
+      state.cliente = data.cliente;
+      saveLocalCliente(data.cliente);
     }
 
-    async function crearCuenta() {
-      const nombre = document.getElementById('nombre').value.trim();
-      const contacto = contactoInput.value.trim();
-
-      if (!nombre || !contacto) {
-        showRegister('Completa tu nombre y un teléfono o correo.');
-        return;
-      }
-
-      btnCrearCuenta.disabled = true;
-      btnCrearCuenta.textContent = 'Creando...';
-      registerFeedback.classList.add('hidden');
-
+    async function loadDashboardMeta() {
       try {
-        const data = await apiGet({
-          action: 'crearCliente',
-          nombre,
-          contacto
-        });
-
-        if (!data.ok || !data.cliente || !data.cliente.id_cliente) {
-          throw new Error(data.error || 'No se pudo crear la cuenta');
+        const data = await apiGet({ action: 'getDashboard' });
+        if (data.ok && data.dashboard) {
+          state.movimientos = (data.dashboard.ultimos_movimientos || []).filter(
+            (m) => String(m.id_cliente || '') === String(state.cliente?.id_cliente || '')
+          );
         }
-
-        saveLocalCliente({ id_cliente: data.cliente.id_cliente });
-        await loadClientFromServer(data.cliente.id_cliente);
-      } catch (error) {
-        showRegister(error.message || 'Ocurrió un problema al crear la cuenta.');
-      } finally {
-        btnCrearCuenta.disabled = false;
-        btnCrearCuenta.textContent = 'Crear cuenta';
+      } catch (err) {
+        console.warn('No se pudieron cargar movimientos.', err);
       }
     }
 
-    async function ingresarCuenta() {
-      const query = loginIdCliente.value.trim();
-      if (!query) {
-        showLoginFeedback('Ingresa tu teléfono, correo o ID.');
+    async function hydrateClientApp() {
+      const local = getLocalCliente();
+      if (!local || !local.id_cliente) {
+        showRegister();
         return;
       }
 
-      btnIngresarCuenta.disabled = true;
-      btnIngresarCuenta.textContent = 'Ingresando...';
+      if (API_URL.includes('PEGAR_AQUI')) {
+        const demoCliente = {
+          id_cliente: 'CLT001',
+          nombre: 'Cliente demo',
+          telefono: '',
+          correo: '',
+          puntos: 4,
+          premio_disponible: 'NO',
+          qr_id: 'CLT001',
+          estado: 'ACTIVO'
+        };
+        state.cliente = demoCliente;
+        state.movimientos = [
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' }
+        ];
+        saveLocalCliente(demoCliente);
+        renderCliente();
+        showApp();
+        return;
+      }
 
       try {
-        const data = await apiGet({
-          action: 'buscarCliente',
-          q: query
-        });
-
-        if (!data.ok || !data.cliente || !data.cliente.id_cliente) {
-          throw new Error(data.error || 'No encontramos una cuenta con ese dato');
-        }
-
-        saveLocalCliente({ id_cliente: data.cliente.id_cliente });
-        await loadClientFromServer(data.cliente.id_cliente);
+        await loadClientFromServer(local.id_cliente);
+        await loadDashboardMeta();
+        renderCliente();
+        showApp();
       } catch (error) {
-        showLoginFeedback(error.message || 'No se pudo recuperar la cuenta.');
+        console.error(error);
+        showRegister('No se pudo recuperar la cuenta guardada. Regístrala de nuevo o revisa la API.', 'error');
+      }
+    }
+
+    async function loginExistingClient() {
+      const input = loginIdCliente.value.trim();
+
+      if (!input) {
+        showLoginFeedback('Ingresa tu teléfono, correo o ID para continuar.', 'error');
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        const demoCliente = {
+          id_cliente: 'CLT001',
+          nombre: 'Cliente demo',
+          telefono: input.includes('@') ? '' : input,
+          correo: input.includes('@') ? input : '',
+          puntos: 4,
+          premio_disponible: 'NO',
+          qr_id: 'CLT001',
+          estado: 'ACTIVO'
+        };
+        state.cliente = demoCliente;
+        state.movimientos = [
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' }
+        ];
+        saveLocalCliente(demoCliente);
+        renderCliente();
+        showApp();
+        return;
+      }
+
+      try {
+        btnIngresarCuenta.disabled = true;
+        btnIngresarCuenta.textContent = 'Ingresando...';
+        const data = await apiGet({ action: 'getClientAny', input });
+        if (!data.ok) throw new Error(data.message || 'No se pudo encontrar la cuenta');
+        state.cliente = data.cliente;
+        saveLocalCliente(data.cliente);
+        await loadDashboardMeta();
+        renderCliente();
+        showApp();
+      } catch (error) {
+        showLoginFeedback(error.message || 'No se encontró ninguna cuenta con ese dato.', 'error');
       } finally {
         btnIngresarCuenta.disabled = false;
         btnIngresarCuenta.textContent = 'Ingresar';
       }
     }
 
-    function resetLocalSession() {
-      clearLocalCliente();
-      state.cliente = null;
-      state.movimientos = [];
-      document.getElementById('nombre').value = '';
-      contactoInput.value = '';
-      showRegister();
-    }
+    async function registerClient() {
+      const nombre = document.getElementById('nombre').value.trim();
+      const contacto = contactoInput.value.trim();
+      const { telefono, correo } = parseContacto(contacto);
 
-    async function refreshCliente() {
-      if (!state.cliente?.id_cliente) return;
-      btnRefresh.disabled = true;
-      btnRefresh.textContent = 'Actualizando...';
+      if (!nombre) {
+        showRegister('Ingresa tu nombre para crear la cuenta.', 'error');
+        return;
+      }
+
+      if (!contacto) {
+        showRegister('Ingresa tu teléfono o correo para continuar.', 'error');
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        const demoCliente = {
+          id_cliente: 'CLT001',
+          nombre,
+          telefono,
+          correo,
+          puntos: 3,
+          premio_disponible: 'NO',
+          qr_id: 'CLT001',
+          estado: 'ACTIVO'
+        };
+        state.cliente = demoCliente;
+        state.movimientos = [
+          { fecha: new Date().toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' },
+          { fecha: new Date(Date.now() - 86400000).toISOString(), tipo: 'SUMA', id_cliente: 'CLT001' }
+        ];
+        saveLocalCliente(demoCliente);
+        renderCliente();
+        showApp();
+        return;
+      }
 
       try {
-        await loadClientFromServer(state.cliente.id_cliente);
+        btnCrearCuenta.disabled = true;
+        btnCrearCuenta.textContent = 'Creando...';
+        const data = await apiGet({ action: 'registerClient', nombre, telefono, correo });
+        if (!data.ok) throw new Error(data.message || 'No se pudo crear la cuenta');
+
+        state.cliente = data.cliente;
+        state.movimientos = [];
+        saveLocalCliente(data.cliente);
+        renderCliente();
+        showApp();
       } catch (error) {
-        alert(error.message || 'No se pudo actualizar.');
+        showRegister(error.message || 'Ocurrió un error al crear la cuenta.', 'error');
       } finally {
-        btnRefresh.disabled = false;
-        btnRefresh.textContent = 'Actualizar';
+        btnCrearCuenta.disabled = false;
+        btnCrearCuenta.textContent = 'Crear cuenta';
       }
     }
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-panel').forEach((panel) => {
-        panel.classList.toggle('hidden', panel.id !== tabId);
-      });
-
+    function handleNav(tabId) {
+      document.querySelectorAll('.tab-panel').forEach((el) => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
       document.querySelectorAll('.nav-btn').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
     }
 
-    async function boot() {
-      const local = getLocalCliente();
-      if (local?.id_cliente) {
-        try {
-          await loadClientFromServer(local.id_cliente);
-          return;
-        } catch {
-          clearLocalCliente();
-        }
-      }
-      showRegister();
+    function runSelfTests() {
+      console.assert(parseContacto('55554444').telefono === '55554444', 'Debe detectar teléfono');
+      console.assert(parseContacto('hola@correo.com').correo === 'hola@correo.com', 'Debe detectar correo');
+      console.assert(parseContacto('').telefono === '' && parseContacto('').correo === '', 'Vacío debe regresar vacío');
+      console.assert(safeText('', 'x') === 'x', 'safeText debe usar fallback');
     }
 
-    btnCrearCuenta.addEventListener('click', crearCuenta);
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => handleNav(btn.dataset.tab));
+    });
+
+    btnCrearCuenta.addEventListener('click', registerClient);
     btnYaTengoCuenta.addEventListener('click', openLoginModal);
-    btnIngresarCuenta.addEventListener('click', ingresarCuenta);
+    btnIngresarCuenta.addEventListener('click', loginExistingClient);
     btnCerrarModal.addEventListener('click', closeLoginModal);
     btnCancelarModal.addEventListener('click', closeLoginModal);
-    btnSalir.addEventListener('click', resetLocalSession);
-    btnRefresh.addEventListener('click', refreshCliente);
-    btnBorrarCuenta.addEventListener('click', resetLocalSession);
 
     loginModal.addEventListener('click', (e) => {
       if (e.target === loginModal) closeLoginModal();
     });
 
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-
-    document.getElementById('nombre').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') contactoInput.focus();
+    loginIdCliente.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loginExistingClient();
     });
 
     contactoInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') crearCuenta();
+      if (e.key === 'Enter') registerClient();
     });
 
-    loginIdCliente.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') ingresarCuenta();
+    btnSalir.addEventListener('click', () => {
+      clearLocalCliente();
+      state.cliente = null;
+      state.movimientos = [];
+      showRegister();
+      handleNav('tabHome');
     });
 
-    boot();
+    btnBorrarCuenta.addEventListener('click', () => {
+      clearLocalCliente();
+      state.cliente = null;
+      state.movimientos = [];
+      showRegister('Cuenta eliminada de este dispositivo.', 'ok');
+    });
+
+    btnRefresh.addEventListener('click', async () => {
+      if (!state.cliente?.id_cliente || API_URL.includes('PEGAR_AQUI')) return;
+      try {
+        await loadClientFromServer(state.cliente.id_cliente);
+        await loadDashboardMeta();
+        renderCliente();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    runSelfTests();
+    hydrateClientApp();
   </script>
 </body>
 </html>
