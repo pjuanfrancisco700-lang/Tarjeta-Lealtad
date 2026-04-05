@@ -1180,7 +1180,14 @@
       btnCrearCuenta.textContent = 'Creando...';
 
       try {
-        const data = await apiRequest({ action: 'register', nombre, contacto });
+        const esCorreo = contacto.includes('@');
+
+      const data = await apiRequest({
+      action: 'registerClient',
+      nombre,
+      telefono: esCorreo ? '' : contacto,
+      correo: esCorreo ? contacto : ''
+      });
         if (!data || data.ok === false || !data.cliente) {
           throw new Error(data?.message || 'No se pudo crear la cuenta.');
         }
