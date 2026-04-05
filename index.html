@@ -556,18 +556,24 @@
       min-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - max(18px, env(safe-area-inset-bottom)) - 24px);
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      gap: 8px;
-      padding: 18px 14px 18px;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: calc(28px + env(safe-area-inset-top)) 14px 18px;
       background:
         radial-gradient(circle at top left, rgba(245,194,101,0.16) 0%, rgba(245,194,101,0) 28%),
         linear-gradient(180deg, #f6f1e8 0%, #f3eee5 100%);
+      position: relative;
+      z-index: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .register-hero {
       text-align: left;
-      padding: 6px 4px 0;
+      padding: 10px 6px 0;
       color: var(--text);
+      position: relative;
+      z-index: 1;
     }
 
     .register .brand {
@@ -950,7 +956,7 @@
       }
 
       .register {
-        padding: 14px 12px calc(18px + env(safe-area-inset-bottom));
+        padding: calc(22px + env(safe-area-inset-top)) 12px calc(18px + env(safe-area-inset-bottom));
       }
 
       .phone {
