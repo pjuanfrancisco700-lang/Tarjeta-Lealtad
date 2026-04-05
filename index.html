@@ -800,16 +800,6 @@
           </div>
         </div>
 
-        <div id="tabMovimientos" class="tab-panel stack hidden">
-          <div class="section-title">
-            <h3>Movimientos recientes</h3>
-            <button class="mini-link" id="btnRefresh" type="button">Actualizar</button>
-          </div>
-
-          <div class="card">
-            <div id="movimientosList"></div>
-          </div>
-        </div>
 
         <div id="tabPerfil" class="tab-panel stack hidden">
           <div class="card">
@@ -869,10 +859,6 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9.5V20h13V9.5"></path></svg>
             <span>Inicio</span>
           </button>
-          <button class="nav-btn" data-tab="tabMovimientos" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8"></path><path d="M8 12h8"></path><path d="M8 17h5"></path><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>
-            <span>Movimientos</span>
-          </button>
           <button class="nav-btn" data-tab="tabPerfil" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>
             <span>Perfil</span>
@@ -895,7 +881,6 @@
     const btnCerrarModal = document.getElementById('btnCerrarModal');
     const btnCancelarModal = document.getElementById('btnCancelarModal');
     const btnSalir = document.getElementById('btnSalir');
-    const btnRefresh = document.getElementById('btnRefresh');
     const btnBorrarCuenta = document.getElementById('btnBorrarCuenta');
     const loginModal = document.getElementById('loginModal');
     const loginFeedback = document.getElementById('loginFeedback');
