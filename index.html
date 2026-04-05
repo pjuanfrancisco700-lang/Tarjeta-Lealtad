@@ -1006,9 +1006,10 @@
     }
 
     function buildQrData(idCliente) {
-      const text = String(idCliente || '').trim();
-      return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(text)}`;
-    }
+  const id = String(idCliente || '').trim();
+  const targetUrl = `https://pjuanfrancisco700-lang.github.io/Confirmar_punto/?id=${encodeURIComponent(id)}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(targetUrl)}`;
+}
 
     function formatDate(input) {
       if (!input) return 'Fecha no disponible';
