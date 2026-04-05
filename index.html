@@ -156,10 +156,26 @@
     .hero h1,
     .register-title {
       margin: 0;
-      font-size: 31px;
-      line-height: 0.98;
-      letter-spacing: -0.07em;
-      font-weight: 800;
+      font-size: 32px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif;
+    }
+
+    .hero p,
+    .register-sub {
+      color: var(--muted);
+      margin: 10px 0 0;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .headline-highlight {
+      background: linear-gradient(90deg, #111215, #6b7280);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.03em;
     }
 
     .hero p,
@@ -422,7 +438,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 12px;
+      gap: 6px;
       padding: 16px 14px 18px;
     }
 
@@ -683,10 +699,10 @@
             <div class="brand-badge">CU</div>
             <div>Coffee Bike</div>
           </div>
-          <div class="mt-18"></div>
+          
           <p class="eyebrow">Tarjeta digital</p>
-          <h1 class="register-title">Tu café también puede premiarte.</h1>
-          <p class="register-sub">Regístrate una sola vez, guarda tu tarjeta en este celular y acumula visitas para ganar tu café gratis.</p>
+          <h1 class="register-title"><span class="headline-highlight">Tu café te premia.</span></h1>
+          <p class="register-sub">Regístrate una vez. Guarda tu tarjeta. Acumula y gana</p>
         </div>
 
         <div class="register-card">
@@ -702,13 +718,13 @@
 
           <div class="register-actions">
             <button class="primary-btn" id="btnCrearCuenta" type="button">Crear cuenta</button>
-            <div class="divider-text">o</div>
+            
             <button class="secondary-btn" id="btnYaTengoCuenta" type="button">Ya tengo cuenta</button>
           </div>
 
           <div id="registerFeedback" class="feedback error hidden"></div>
 
-          <p class="register-note">Tu cuenta quedará guardada en este dispositivo para que la próxima vez abras la app y veas directo tu tarjeta.</p>
+          
         </div>
       </section>
 
@@ -974,13 +990,14 @@
     }
 
     function clearFormInputs() {
-      if (nombreInput) nombreInput.value = '';
-      if (contactoInput) contactoInput.value = '';
-      if (loginIdCliente) loginIdCliente.value = '';
+      nombreInput.value = '';
+      contactoInput.value = '';
+      loginIdCliente.value = '';
     }
 
     function safeText(value, fallback = '—') {
-      return value && String(value).trim() ? String(value).trim() : fallback;
+      const text = String(value ?? '').trim();
+      return text || fallback;
     }
 
     function safeNumber(value, fallback = 0) {
@@ -988,60 +1005,41 @@
       return Number.isFinite(n) ? n : fallback;
     }
 
-    function formatDate(value) {
-      if (!value) return 'Sin movimientos todavía';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return safeText(value, 'Sin fecha');
+    function buildQrData(idCliente) {
+      const text = String(idCliente || '').trim();
+      return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(text)}`;
+    }
 
-      return date.toLocaleString('es-GT', {
-        year: 'numeric',
+    function formatDate(input) {
+      if (!input) return 'Fecha no disponible';
+      const date = new Date(input);
+      if (Number.isNaN(date.getTime())) return String(input);
+      return new Intl.DateTimeFormat('es-GT', {
+        day: '2-digit',
         month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
-    function buildQrData(id) {
-      const cleanId = safeText(id, '');
-      const targetUrl = `https://pjuanfrancisco700-lang.github.io/Confirmar_punto/?id=${encodeURIComponent(cleanId)}`;
-      return `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(targetUrl)}`;
-    }
-
-    function parseContacto(contacto) {
-      const value = String(contacto || '').trim();
-      return {
-        telefono: value && !value.includes('@') ? value : '',
-        correo: value && value.includes('@') ? value : ''
-      };
+        year: 'numeric'
+      }).format(date);
     }
 
     function renderCups(points, goal) {
       ui.cupsGrid.innerHTML = '';
-      const safeGoal = Math.max(1, safeNumber(goal, 10));
-      const safePoints = Math.max(0, safeNumber(points, 0));
-      const total = Math.max(safeGoal, 10);
-
-      for (let i = 1; i <= total; i += 1) {
-        const item = document.createElement('div');
-        item.className = `cup ${i <= safePoints ? 'filled' : ''}`;
-        item.textContent = '☕';
-        ui.cupsGrid.appendChild(item);
+      for (let i = 1; i <= goal; i += 1) {
+        const cup = document.createElement('div');
+        cup.className = `cup ${i <= points ? 'filled' : ''}`;
+        cup.textContent = '☕';
+        ui.cupsGrid.appendChild(cup);
       }
     }
 
     function renderMovimientos() {
       ui.movimientosList.innerHTML = '';
 
-      if (!Array.isArray(state.movimientos) || !state.movimientos.length) {
+      if (!state.movimientos.length) {
         ui.movimientosList.innerHTML = `
           <div class="row-card">
-            <div class="row-left">
-              <div class="row-icon"><svg viewBox="0 0 24 24"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></div>
-              <div>
-                <strong>Aún no hay movimientos</strong>
-                <p>Cuando te marquen puntos aparecerán aquí.</p>
-              </div>
+            <div>
+              <strong>Sin movimientos todavía</strong>
+              <p>Cuando acumules puntos o canjees premios, aparecerán aquí.</p>
             </div>
           </div>
         `;
@@ -1050,11 +1048,13 @@
 
       state.movimientos.forEach((mov) => {
         const row = document.createElement('div');
-        const isSuma = String(mov.tipo || '').toUpperCase() === 'SUMA';
         row.className = 'row-card';
+
+        const tipo = String(mov.tipo || '').toUpperCase();
+        const isSuma = tipo === 'SUMA';
         row.innerHTML = `
           <div class="row-left">
-            <div class="row-icon">${isSuma ? '<svg viewBox="0 0 24 24"><path d="M3 8h13a4 4 0 0 1 0 8H3z"/><path d="M16 8V6a3 3 0 0 0-6 0v2"/></svg>' : '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V4M8 4h8"/></svg>'}</div>
+            <div class="row-icon">${isSuma ? '☕' : '🎁'}</div>
             <div>
               <strong>${isSuma ? 'Punto agregado' : 'Canje de recompensa'}</strong>
               <p>${formatDate(mov.fecha)}</p>
@@ -1180,38 +1180,16 @@
       btnCrearCuenta.textContent = 'Creando...';
 
       try {
-        const { telefono, correo } = parseContacto(contacto);
-        const data = await apiRequest({
-          action: 'registerClient',
-          nombre,
-          telefono,
-          correo
-        });
-
+        const data = await apiRequest({ action: 'register', nombre, contacto });
         if (!data || data.ok === false || !data.cliente) {
           throw new Error(data?.message || 'No se pudo crear la cuenta.');
         }
 
         state.cliente = data.cliente;
         state.movimientos = [];
-
-        try {
-          const dashboard = await apiRequest({ action: 'getDashboard' });
-          if (dashboard?.config) {
-            state.metaPuntos = safeNumber(dashboard.config.meta_puntos, 10);
-            state.recompensa = safeText(dashboard.config.recompensa, 'café gratis');
-            state.negocio = safeText(dashboard.config.nombre_negocio, 'Café Urbano');
-          }
-        } catch {
-          state.metaPuntos = 10;
-          state.recompensa = 'café gratis';
-          state.negocio = 'Café Urbano';
-        }
-
         saveLocalCliente(state.cliente);
-        renderCliente();
-        showApp();
-        setActiveTab('tabHome');
+
+        await cargarClienteDesdeServidor(state.cliente.id_cliente || contacto);
         clearFormInputs();
       } catch (error) {
         showRegister(error.message || 'Ocurrió un error al crear la cuenta.');
@@ -1224,7 +1202,7 @@
     async function ingresarCuenta() {
       const identificador = safeText(loginIdCliente.value, '');
       if (!identificador) {
-        showLoginFeedback('Escribe tu teléfono, correo o ID para ingresar.');
+        showLoginFeedback('Ingresa tu teléfono, correo o ID.');
         loginIdCliente.focus();
         return;
       }
@@ -1242,15 +1220,14 @@
       }
     }
 
-    async function refreshData() {
+    async function refreshCliente() {
       if (!state.cliente?.id_cliente) return;
       btnRefresh.disabled = true;
       btnRefresh.textContent = 'Actualizando...';
-
       try {
         await cargarClienteDesdeServidor(state.cliente.id_cliente);
       } catch (error) {
-        alert(error.message || 'No se pudo actualizar la información.');
+        alert(error.message || 'No se pudo actualizar la tarjeta.');
       } finally {
         btnRefresh.disabled = false;
         btnRefresh.textContent = 'Actualizar';
@@ -1258,27 +1235,24 @@
     }
 
     function logoutLocal() {
+      clearLocalCliente();
       state.cliente = null;
       state.movimientos = [];
-      clearLocalCliente();
       clearFormInputs();
       showRegister();
     }
 
     async function bootstrap() {
-      const local = getLocalCliente();
-
-      if (!local || !local.id_cliente) {
-        showRegister();
-        return;
+      const localCliente = getLocalCliente();
+      if (localCliente?.id_cliente) {
+        try {
+          await cargarClienteDesdeServidor(localCliente.id_cliente);
+          return;
+        } catch {
+          clearLocalCliente();
+        }
       }
-
-      try {
-        await cargarClienteDesdeServidor(local.id_cliente);
-      } catch {
-        clearLocalCliente();
-        showRegister('Tu sesión local venció o cambió. Ingresa nuevamente.');
-      }
+      showRegister();
     }
 
     btnCrearCuenta.addEventListener('click', crearCuenta);
@@ -1287,11 +1261,11 @@
     btnCerrarModal.addEventListener('click', closeLoginModal);
     btnCancelarModal.addEventListener('click', closeLoginModal);
     btnSalir.addEventListener('click', logoutLocal);
-    btnRefresh.addEventListener('click', refreshData);
+    btnRefresh.addEventListener('click', refreshCliente);
     btnBorrarCuenta.addEventListener('click', logoutLocal);
 
-    loginModal.addEventListener('click', (e) => {
-      if (e.target === loginModal) closeLoginModal();
+    loginModal.addEventListener('click', (event) => {
+      if (event.target === loginModal) closeLoginModal();
     });
 
     document.querySelectorAll('.nav-btn').forEach((btn) => {
@@ -1299,13 +1273,21 @@
     });
 
     [nombreInput, contactoInput].forEach((input) => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') crearCuenta();
+      input.addEventListener('input', () => {
+        registerFeedback.classList.add('hidden');
       });
     });
 
-    loginIdCliente.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') ingresarCuenta();
+    loginIdCliente.addEventListener('input', () => {
+      loginFeedback.classList.add('hidden');
+    });
+
+    loginIdCliente.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') ingresarCuenta();
+    });
+
+    contactoInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') crearCuenta();
     });
 
     bootstrap();
