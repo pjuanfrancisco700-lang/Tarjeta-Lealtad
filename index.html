@@ -516,48 +516,39 @@
     .bottom-nav {
       position: sticky;
       bottom: 0;
-      margin-top: 10px;
-      background: rgba(255,255,255,0.82);
-      backdrop-filter: blur(18px) saturate(160%);
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
-      border: 1px solid rgba(255,255,255,0.9);
-      box-shadow: 0 20px 40px rgba(15,23,42,0.1);
-      border-radius: 24px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      padding: 8px;
-      gap: 8px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 6px 0 2px;
     }
 
     .nav-btn {
+      width: 10px;
+      height: 10px;
+      padding: 0;
       border: none;
-      background: transparent;
-      border-radius: 18px;
-      padding: 8px 6px;
+      border-radius: 999px;
+      background: #d1d5db;
       cursor: pointer;
-      display: grid;
-      gap: 5px;
-      justify-items: center;
-      color: #8b93a1;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: -0.01em;
+      transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+      opacity: 0.9;
+    }
+
+    .nav-btn span {
+      display: none;
     }
 
     .nav-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.9;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      display: none;
     }
 
     .nav-btn.active {
-      background: rgba(17,18,21,0.06);
-      color: var(--text);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+      background: #111215;
+      transform: scale(1.15);
+      opacity: 1;
+      box-shadow: 0 4px 10px rgba(17,18,21,0.18);
     }
 
     .small-meta {
@@ -652,6 +643,95 @@
       font-size: 18px;
       cursor: pointer;
       flex-shrink: 0;
+    }
+
+
+    .progress-wrap {
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.35s ease, transform 0.35s ease, border-color 0.35s ease;
+    }
+
+    .progress-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -35%;
+      background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 55%);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.88);
+    }
+
+    .progress-wrap.update-glow {
+      border-color: rgba(255,255,255,0.98);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255,255,255,0.45);
+    }
+
+    .progress-wrap.update-glow::after {
+      animation: cardFlash 1s ease;
+    }
+
+    .big-points strong.points-bump {
+      display: inline-block;
+      animation: pointsBump 0.45s ease;
+    }
+
+    .cup.fill-pop {
+      animation: cupFillPop 0.45s ease;
+    }
+
+    .points-feedback {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 2;
+    }
+
+    .points-feedback.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .points-feedback span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(17,18,21,0.9);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      box-shadow: 0 14px 28px rgba(17,18,21,0.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    @keyframes pointsBump {
+      0% { transform: scale(1); opacity: 0.9; }
+      40% { transform: scale(1.16); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes cardFlash {
+      0% { opacity: 0; transform: scale(0.88); }
+      20% { opacity: 0.95; }
+      100% { opacity: 0; transform: scale(1.08); }
+    }
+
+    @keyframes cupFillPop {
+      0% { transform: translateY(0) scale(1); }
+      45% { transform: translateY(-2px) scale(1.08); }
+      100% { transform: translateY(-1px) scale(1); }
     }
 
     @media (max-width: 380px) {
@@ -788,12 +868,15 @@
               </div>
               <div style="font-size:22px; color:var(--text); opacity:.9;">✦</div>
             </div>
+            <div id="pointsFeedback" class="points-feedback" aria-live="polite" aria-atomic="true">
+              <span>+1 punto agregado</span>
+            </div>
           </div>
 
           <div class="card qr-card">
             <p class="eyebrow" style="margin-bottom:14px;">Tu QR personal</p>
             <div class="qr-box">
-              <img id="qrImage" alt="QR del cliente" />
+              <img id="qrImage" alt="QR del cliente" loading="lazy" decoding="async" fetchpriority="low" />
             </div>
             <strong style="display:block; font-size:18px; letter-spacing:-0.03em;">Muéstralo al finalizar tu compra</strong>
             <p class="muted">El encargado lo escanea, valida el punto y tu progreso se actualiza en la tarjeta.</p>
@@ -864,17 +947,11 @@
           <p class="center-note">Esto solo elimina la sesión local del teléfono. No borra el cliente en la base de datos.</p>
         </div>
 
-        <nav class="bottom-nav">
-          <button class="nav-btn active" data-tab="tabHome" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5.5 9.5V20h13V9.5"></path></svg>
+        <nav class="bottom-nav" aria-label="Indicadores de página">
+          <button class="nav-btn active" data-tab="tabHome" type="button" aria-label="Ir a inicio" title="Inicio">
             <span>Inicio</span>
           </button>
-          <button class="nav-btn" data-tab="tabMovimientos" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8"></path><path d="M8 12h8"></path><path d="M8 17h5"></path><rect x="4" y="4" width="16" height="16" rx="4"></rect></svg>
-            <span>Movimientos</span>
-          </button>
-          <button class="nav-btn" data-tab="tabPerfil" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>
+          <button class="nav-btn" data-tab="tabPerfil" type="button" aria-label="Ir a perfil" title="Perfil">
             <span>Perfil</span>
           </button>
         </nav>
@@ -885,6 +962,9 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
     const STORAGE_KEY = 'tarjetaLealtadCliente';
+    const CACHE_KEY = 'tarjetaLealtadCache';
+    const DASHBOARD_CACHE_KEY = 'tarjetaLealtadDashboardCache';
+    const DASHBOARD_CACHE_TTL = 1000 * 60 * 60 * 6;
 
     const registerView = document.getElementById('registerView');
     const appView = document.getElementById('appView');
@@ -919,7 +999,9 @@
       perfilPremio: document.getElementById('perfilPremio'),
       qrImage: document.getElementById('qrImage'),
       cupsGrid: document.getElementById('cupsGrid'),
-      movimientosList: document.getElementById('movimientosList')
+      movimientosList: document.getElementById('movimientosList'),
+      progressCard: document.querySelector('.progress-wrap'),
+      pointsFeedback: document.getElementById('pointsFeedback')
     };
 
     const state = {
@@ -927,10 +1009,21 @@
       metaPuntos: 10,
       recompensa: 'café gratis',
       negocio: 'Café Urbano',
-      movimientos: []
+      movimientos: [],
+      qrPendingId: null,
+      qrRenderedId: null,
+      dashboardLoaded: false,
+      pollTimer: null,
+      pollInFlight: false,
+      pollIntervalMs: 2500,
+      feedbackTimer: null
     };
 
+    const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+    const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
+
     function showRegister(message = '', type = 'error') {
+      stopAutoRefresh();
       registerView.classList.remove('hidden');
       appView.classList.add('hidden');
       closeLoginModal();
@@ -950,6 +1043,7 @@
       registerView.classList.add('hidden');
       appView.classList.remove('hidden');
       closeLoginModal();
+      startAutoRefresh();
     }
 
     function openLoginModal() {
@@ -989,6 +1083,45 @@
       localStorage.removeItem(STORAGE_KEY);
     }
 
+    function saveCache(snapshot) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          ...snapshot,
+          savedAt: Date.now()
+        }));
+      } catch {}
+    }
+
+    function getCache() {
+      try {
+        return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      } catch {
+        return null;
+      }
+    }
+
+    function clearCache() {
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(DASHBOARD_CACHE_KEY);
+    }
+
+    function saveDashboardCache(config) {
+      try {
+        localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify({
+          config,
+          savedAt: Date.now()
+        }));
+      } catch {}
+    }
+
+    function getDashboardCache() {
+      try {
+        return JSON.parse(localStorage.getItem(DASHBOARD_CACHE_KEY) || 'null');
+      } catch {
+        return null;
+      }
+    }
+
     function clearFormInputs() {
       nombreInput.value = '';
       contactoInput.value = '';
@@ -1022,14 +1155,21 @@
       }).format(date);
     }
 
-    function renderCups(points, goal) {
+    function renderCups(points, goal, previousPoints = null) {
       ui.cupsGrid.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      const prev = previousPoints === null ? points : Math.max(0, safeNumber(previousPoints, 0));
+
       for (let i = 1; i <= goal; i += 1) {
         const cup = document.createElement('div');
-        cup.className = `cup ${i <= points ? 'filled' : ''}`;
+        const isFilled = i <= points;
+        const isNewFill = points > prev && i > prev && i <= points;
+        cup.className = `cup ${isFilled ? 'filled' : ''} ${isNewFill ? 'fill-pop' : ''}`.trim();
         cup.textContent = '☕';
-        ui.cupsGrid.appendChild(cup);
+        fragment.appendChild(cup);
       }
+
+      ui.cupsGrid.appendChild(fragment);
     }
 
     function renderMovimientos() {
@@ -1067,9 +1207,136 @@
       });
     }
 
-    function renderCliente() {
+    function getActiveTabId() {
+      const activeButton = navButtons.find((btn) => btn.classList.contains('active'));
+      return activeButton?.dataset.tab || 'tabHome';
+    }
+
+    function animatePointsValue(from, to, duration = 420) {
+      if (!ui.pointsCount) return;
+      const startValue = safeNumber(from, 0);
+      const endValue = safeNumber(to, 0);
+
+      if (startValue === endValue) {
+        ui.pointsCount.textContent = endValue;
+        return;
+      }
+
+      const startTime = performance.now();
+
+      function step(now) {
+        const progress = Math.min(1, (now - startTime) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(startValue + ((endValue - startValue) * eased));
+        ui.pointsCount.textContent = value;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          ui.pointsCount.textContent = endValue;
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function flashProgressCard() {
+      if (!ui.progressCard) return;
+      ui.progressCard.classList.remove('update-glow');
+      void ui.progressCard.offsetWidth;
+      ui.progressCard.classList.add('update-glow');
+
+      setTimeout(() => {
+        ui.progressCard.classList.remove('update-glow');
+      }, 1000);
+    }
+
+    function showPointsFeedback(delta = 1) {
+      if (!ui.pointsFeedback) return;
+      const safeDelta = Math.max(1, safeNumber(delta, 1));
+      const label = safeDelta === 1 ? '+1 punto agregado' : `+${safeDelta} puntos agregados`;
+      const bubble = ui.pointsFeedback.querySelector('span');
+      if (bubble) bubble.textContent = label;
+
+      clearTimeout(state.feedbackTimer);
+      ui.pointsFeedback.classList.add('show');
+
+      state.feedbackTimer = setTimeout(() => {
+        ui.pointsFeedback.classList.remove('show');
+      }, 2000);
+    }
+
+    function playPointsIncreaseFeedback(previousPoints, currentPoints) {
+      const from = Math.max(0, safeNumber(previousPoints, 0));
+      const to = Math.max(0, safeNumber(currentPoints, 0));
+      const delta = Math.max(1, to - from);
+
+      animatePointsValue(from, to);
+      ui.pointsCount.classList.remove('points-bump');
+      void ui.pointsCount.offsetWidth;
+      ui.pointsCount.classList.add('points-bump');
+      flashProgressCard();
+      showPointsFeedback(delta);
+    }
+
+    function applyDashboardConfig(config = {}) {
+      state.metaPuntos = Math.max(1, safeNumber(config.meta_puntos, 10));
+      state.recompensa = safeText(config.recompensa, 'café gratis');
+      state.negocio = safeText(config.nombre_negocio, 'Café Urbano');
+      state.dashboardLoaded = true;
+    }
+
+    function scheduleQrRender(idCliente) {
+      const nextId = String(idCliente || '').trim();
+      if (!nextId || nextId === state.qrRenderedId) return;
+
+      state.qrPendingId = nextId;
+
+      const run = () => {
+        if (!state.qrPendingId) return;
+        const pendingId = state.qrPendingId;
+        state.qrPendingId = null;
+
+        if (pendingId === state.qrRenderedId) return;
+
+        ui.qrImage.src = buildQrData(pendingId);
+        state.qrRenderedId = pendingId;
+      };
+
+      if (window.requestIdleCallback) {
+        requestIdleCallback(run, { timeout: 700 });
+      } else {
+        setTimeout(run, 60);
+      }
+    }
+
+    async function loadDashboardConfig(force = false) {
+      const cached = getDashboardCache();
+      const isFresh = cached?.savedAt && (Date.now() - cached.savedAt < DASHBOARD_CACHE_TTL);
+
+      if (!force && isFresh && cached?.config) {
+        applyDashboardConfig(cached.config);
+        return cached.config;
+      }
+
+      const dashboard = await apiRequest({ action: 'getDashboard' });
+      if (dashboard?.config) {
+        applyDashboardConfig(dashboard.config);
+        saveDashboardCache(dashboard.config);
+        return dashboard.config;
+      }
+
+      throw new Error('No se pudo cargar la configuración.');
+    }
+
+    function renderCliente(options = {}) {
       const c = state.cliente;
       if (!c) return;
+
+      const {
+        previousPoints = null,
+        animatePoints = false
+      } = options;
 
       const puntos = Math.max(0, safeNumber(c.puntos, 0));
       const meta = Math.max(1, safeNumber(state.metaPuntos, 10));
@@ -1082,10 +1349,13 @@
       ui.perfilCorreo.textContent = safeText(c.correo, 'No registrado');
       ui.perfilId.textContent = safeText(c.id_cliente);
 
-      ui.pointsCount.textContent = puntos;
+      if (animatePoints && previousPoints !== null && puntos > safeNumber(previousPoints, 0)) {
+        playPointsIncreaseFeedback(previousPoints, puntos);
+      } else {
+        ui.pointsCount.textContent = puntos;
+      }
+
       ui.goalCount.textContent = meta;
-
-
       ui.heroText.textContent = 'Tu tarjeta está activa.';
 
       ui.faltanText.textContent = premioDisponible
@@ -1103,19 +1373,19 @@
         ? `Tienes un ${state.recompensa} disponible.`
         : 'Sin premio disponible';
 
-      ui.qrImage.src = buildQrData(c.id_cliente);
       ui.qrImage.alt = `QR de ${safeText(c.nombre, 'cliente')}`;
+      scheduleQrRender(c.id_cliente);
 
-      renderCups(puntos, meta);
+      renderCups(puntos, meta, previousPoints);
       renderMovimientos();
     }
 
     function setActiveTab(tabId) {
-      document.querySelectorAll('.tab-panel').forEach((panel) => {
+      tabPanels.forEach((panel) => {
         panel.classList.toggle('hidden', panel.id !== tabId);
       });
 
-      document.querySelectorAll('.nav-btn').forEach((btn) => {
+      navButtons.forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
     }
@@ -1133,7 +1403,16 @@
       return response.json();
     }
 
-    async function cargarClienteDesdeServidor(identificador) {
+    async function cargarClienteDesdeServidor(identificador, options = {}) {
+      const {
+        forceDashboard = false,
+        silent = false,
+        preserveActiveTab = false
+      } = options;
+
+      const activeTabId = preserveActiveTab ? getActiveTabId() : 'tabHome';
+      const previousPoints = state.cliente ? safeNumber(state.cliente.puntos, 0) : null;
+
       const data = await apiRequest({ action: 'getClientAny', input: identificador });
       if (!data || data.ok === false || !data.cliente) {
         throw new Error(data?.message || 'No encontramos esa cuenta.');
@@ -1143,22 +1422,41 @@
       state.movimientos = Array.isArray(data.movimientos) ? data.movimientos : [];
 
       try {
-        const dashboard = await apiRequest({ action: 'getDashboard' });
-        if (dashboard?.config) {
-          state.metaPuntos = safeNumber(dashboard.config.meta_puntos, 10);
-          state.recompensa = safeText(dashboard.config.recompensa, 'café gratis');
-          state.negocio = safeText(dashboard.config.nombre_negocio, 'Café Urbano');
-        }
+        await loadDashboardConfig(forceDashboard);
       } catch {
-        state.metaPuntos = 10;
-        state.recompensa = 'café gratis';
-        state.negocio = 'Café Urbano';
+        const cached = getDashboardCache();
+        if (cached?.config) {
+          applyDashboardConfig(cached.config);
+        } else {
+          applyDashboardConfig({});
+        }
       }
 
       saveLocalCliente(state.cliente);
-      renderCliente();
-      showApp();
-      setActiveTab('tabHome');
+      saveCache({
+        cliente: state.cliente,
+        movimientos: state.movimientos,
+        config: {
+          meta_puntos: state.metaPuntos,
+          recompensa: state.recompensa,
+          nombre_negocio: state.negocio
+        }
+      });
+
+      const currentPoints = safeNumber(state.cliente?.puntos, 0);
+      const shouldAnimateIncrease = previousPoints !== null && currentPoints > previousPoints;
+
+      renderCliente({
+        previousPoints,
+        animatePoints: shouldAnimateIncrease
+      });
+
+      if (!silent) {
+        showApp();
+      }
+
+      setActiveTab(preserveActiveTab ? activeTabId : 'tabHome');
+      startAutoRefresh();
     }
 
     async function crearCuenta() {
@@ -1233,7 +1531,7 @@
       btnRefresh.disabled = true;
       btnRefresh.textContent = 'Actualizando...';
       try {
-        await cargarClienteDesdeServidor(state.cliente.id_cliente);
+        await cargarClienteDesdeServidor(state.cliente.id_cliente, { preserveActiveTab: true });
       } catch (error) {
         alert(error.message || 'No se pudo actualizar la tarjeta.');
       } finally {
@@ -1242,24 +1540,76 @@
       }
     }
 
+    function stopAutoRefresh() {
+      if (state.pollTimer) {
+        clearInterval(state.pollTimer);
+        state.pollTimer = null;
+      }
+      state.pollInFlight = false;
+    }
+
+    function startAutoRefresh() {
+      if (!state.cliente?.id_cliente || state.pollTimer) return;
+
+      state.pollTimer = setInterval(async () => {
+        if (document.hidden || state.pollInFlight || !state.cliente?.id_cliente) return;
+
+        state.pollInFlight = true;
+        try {
+          await cargarClienteDesdeServidor(state.cliente.id_cliente, {
+            silent: true,
+            preserveActiveTab: true
+          });
+        } catch (error) {
+          console.warn('Auto refresh paused on error:', error?.message || error);
+        } finally {
+          state.pollInFlight = false;
+        }
+      }, state.pollIntervalMs);
+    }
+
     function logoutLocal() {
+      stopAutoRefresh();
       clearLocalCliente();
+      clearCache();
       state.cliente = null;
       state.movimientos = [];
+      state.qrPendingId = null;
+      state.qrRenderedId = null;
+      ui.qrImage.removeAttribute('src');
+      state.dashboardLoaded = false;
       clearFormInputs();
       showRegister();
     }
 
     async function bootstrap() {
       const localCliente = getLocalCliente();
+      const cached = getCache();
+
       if (localCliente?.id_cliente) {
+        const sameCachedClient = cached?.cliente?.id_cliente && cached.cliente.id_cliente === localCliente.id_cliente;
+
+        if (sameCachedClient) {
+          state.cliente = cached.cliente;
+          state.movimientos = Array.isArray(cached.movimientos) ? cached.movimientos : [];
+          applyDashboardConfig(cached.config || {});
+          renderCliente();
+          showApp();
+          setActiveTab('tabHome');
+
+          cargarClienteDesdeServidor(localCliente.id_cliente).catch(() => {});
+          return;
+        }
+
         try {
           await cargarClienteDesdeServidor(localCliente.id_cliente);
           return;
         } catch {
           clearLocalCliente();
+          clearCache();
         }
       }
+
       showRegister();
     }
 
@@ -1276,7 +1626,7 @@
       if (event.target === loginModal) closeLoginModal();
     });
 
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
+    navButtons.forEach((btn) => {
       btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
     });
 
@@ -1296,6 +1646,16 @@
 
     contactoInput.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') crearCuenta();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      if (state.cliente?.id_cliente) {
+        cargarClienteDesdeServidor(state.cliente.id_cliente, {
+          silent: true,
+          preserveActiveTab: true
+        }).catch(() => {});
+      }
     });
 
     bootstrap();
