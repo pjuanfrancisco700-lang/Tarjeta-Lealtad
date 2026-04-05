@@ -576,6 +576,44 @@
       line-height: 1.5;
     }
 
+
+    .tab-panel {
+      animation-duration: 0.24s;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      animation-fill-mode: both;
+      will-change: transform, opacity;
+    }
+
+    .tab-panel.tab-enter-next {
+      animation-name: tabSlideInNext;
+    }
+
+    .tab-panel.tab-enter-prev {
+      animation-name: tabSlideInPrev;
+    }
+
+    @keyframes tabSlideInNext {
+      from {
+        opacity: 0;
+        transform: translate3d(24px, 0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    @keyframes tabSlideInPrev {
+      from {
+        opacity: 0;
+        transform: translate3d(-24px, 0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
     .register-actions,
     .modal-actions {
       display: grid;
@@ -1016,7 +1054,16 @@
       pollTimer: null,
       pollInFlight: false,
       pollIntervalMs: 2500,
-      feedbackTimer: null
+      feedbackTimer: null,
+      tabAnimationTimer: null,
+      swipe: {
+        startX: 0,
+        startY: 0,
+        active: false,
+        ignore: false,
+        lockedAxis: '',
+        touchId: null
+      }
     };
 
     const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
@@ -1380,7 +1427,34 @@
       renderMovimientos();
     }
 
-    function setActiveTab(tabId) {
+    function getTabIndex(tabId) {
+      return navButtons.findIndex((btn) => btn.dataset.tab === tabId);
+    }
+
+    function animateTabEntry(tabId, direction = 'next') {
+      const panel = document.getElementById(tabId);
+      if (!panel) return;
+
+      const animationClass = direction === 'prev' ? 'tab-enter-prev' : 'tab-enter-next';
+      panel.classList.remove('tab-enter-next', 'tab-enter-prev');
+      void panel.offsetWidth;
+      panel.classList.add(animationClass);
+
+      clearTimeout(state.tabAnimationTimer);
+      state.tabAnimationTimer = setTimeout(() => {
+        panel.classList.remove('tab-enter-next', 'tab-enter-prev');
+      }, 260);
+    }
+
+    function setActiveTab(tabId, options = {}) {
+      const {
+        direction = null,
+        animate = false
+      } = options;
+
+      const currentTabId = getActiveTabId();
+      if (!tabId || currentTabId === tabId) return;
+
       tabPanels.forEach((panel) => {
         panel.classList.toggle('hidden', panel.id !== tabId);
       });
@@ -1388,6 +1462,105 @@
       navButtons.forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
+
+      if (animate) {
+        animateTabEntry(tabId, direction === 'prev' ? 'prev' : 'next');
+      }
+    }
+
+    function goToAdjacentTab(offset) {
+      const orderedTabs = navButtons.map((btn) => btn.dataset.tab);
+      if (!orderedTabs.length) return;
+
+      const currentIndex = Math.max(0, orderedTabs.indexOf(getActiveTabId()));
+      const targetIndex = currentIndex + offset;
+      if (targetIndex < 0 || targetIndex >= orderedTabs.length) return;
+
+      setActiveTab(orderedTabs[targetIndex], {
+        direction: offset > 0 ? 'next' : 'prev',
+        animate: true
+      });
+    }
+
+    function shouldIgnoreSwipeStart(target) {
+      return Boolean(target.closest('button, a, input, textarea, select, label, [role="button"], .modal-card'));
+    }
+
+    function resetSwipeState() {
+      state.swipe.startX = 0;
+      state.swipe.startY = 0;
+      state.swipe.active = false;
+      state.swipe.ignore = false;
+      state.swipe.lockedAxis = '';
+      state.swipe.touchId = null;
+    }
+
+    function getTrackedTouch(touches) {
+      if (state.swipe.touchId === null) return null;
+      return Array.from(touches).find((touch) => touch.identifier === state.swipe.touchId) || null;
+    }
+
+    function setupSwipeNavigation() {
+      const swipeSurface = appView;
+      if (!swipeSurface) return;
+
+      swipeSurface.addEventListener('touchstart', (event) => {
+        if (appView.classList.contains('hidden') || (loginModal && !loginModal.classList.contains('hidden'))) return;
+        if (event.touches.length !== 1) {
+          resetSwipeState();
+          return;
+        }
+
+        const touch = event.touches[0];
+        state.swipe.startX = touch.clientX;
+        state.swipe.startY = touch.clientY;
+        state.swipe.active = true;
+        state.swipe.ignore = shouldIgnoreSwipeStart(event.target);
+        state.swipe.lockedAxis = '';
+        state.swipe.touchId = touch.identifier;
+      }, { passive: true });
+
+      swipeSurface.addEventListener('touchmove', (event) => {
+        if (!state.swipe.active || state.swipe.ignore) return;
+        const touch = getTrackedTouch(event.touches);
+        if (!touch) return;
+
+        const deltaX = touch.clientX - state.swipe.startX;
+        const deltaY = touch.clientY - state.swipe.startY;
+
+        if (!state.swipe.lockedAxis) {
+          if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
+          state.swipe.lockedAxis = Math.abs(deltaX) > Math.abs(deltaY) * 1.15 ? 'x' : 'y';
+        }
+      }, { passive: true });
+
+      swipeSurface.addEventListener('touchend', (event) => {
+        if (!state.swipe.active) return;
+
+        const touch = getTrackedTouch(event.changedTouches);
+        const ignore = state.swipe.ignore;
+        const lockedAxis = state.swipe.lockedAxis;
+        const startX = state.swipe.startX;
+        const startY = state.swipe.startY;
+        resetSwipeState();
+
+        if (!touch || ignore || lockedAxis !== 'x') return;
+
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+
+        if (absX < 55 || absY > 90 || absX < absY * 1.35) return;
+
+        if (deltaX < 0) {
+          goToAdjacentTab(1);
+        } else {
+          goToAdjacentTab(-1);
+        }
+      }, { passive: true });
+
+      swipeSurface.addEventListener('touchcancel', resetSwipeState, { passive: true });
     }
 
     async function apiRequest(params) {
@@ -1455,7 +1628,7 @@
         showApp();
       }
 
-      setActiveTab(preserveActiveTab ? activeTabId : 'tabHome');
+      setActiveTab(preserveActiveTab ? activeTabId : 'tabHome', { animate: false });
       startAutoRefresh();
     }
 
@@ -1595,7 +1768,7 @@
           applyDashboardConfig(cached.config || {});
           renderCliente();
           showApp();
-          setActiveTab('tabHome');
+          setActiveTab('tabHome', { animate: false });
 
           cargarClienteDesdeServidor(localCliente.id_cliente).catch(() => {});
           return;
@@ -1627,7 +1800,14 @@
     });
 
     navButtons.forEach((btn) => {
-      btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+      btn.addEventListener('click', () => {
+        const currentIndex = getTabIndex(getActiveTabId());
+        const nextIndex = getTabIndex(btn.dataset.tab);
+        setActiveTab(btn.dataset.tab, {
+          direction: nextIndex < currentIndex ? 'prev' : 'next',
+          animate: true
+        });
+      });
     });
 
     [nombreInput, contactoInput].forEach((input) => {
@@ -1658,6 +1838,7 @@
       }
     });
 
+    setupSwipeNavigation();
     bootstrap();
   </script>
 </body>
