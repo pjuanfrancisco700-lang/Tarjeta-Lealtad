@@ -904,7 +904,6 @@
       perfilPremio: document.getElementById('perfilPremio'),
       qrImage: document.getElementById('qrImage'),
       cupsGrid: document.getElementById('cupsGrid'),
-      movimientosList: document.getElementById('movimientosList')
     };
 
     const state = {
@@ -1092,7 +1091,6 @@
       ui.qrImage.alt = `QR de ${safeText(c.nombre, 'cliente')}`;
 
       renderCups(puntos, meta);
-      renderMovimientos();
     }
 
     function setActiveTab(tabId) {
