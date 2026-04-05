@@ -90,6 +90,7 @@
     .screen {
       padding: 10px;
       padding-bottom: calc(18px + env(safe-area-inset-bottom));
+      touch-action: pan-y;
     }
 
     .topbar {
@@ -1059,10 +1060,13 @@
       swipe: {
         startX: 0,
         startY: 0,
+        startTime: 0,
         active: false,
         ignore: false,
         lockedAxis: '',
-        touchId: null
+        touchId: null,
+        navigating: false,
+        cooldownUntil: 0
       }
     };
 
@@ -1489,6 +1493,7 @@
     function resetSwipeState() {
       state.swipe.startX = 0;
       state.swipe.startY = 0;
+      state.swipe.startTime = 0;
       state.swipe.active = false;
       state.swipe.ignore = false;
       state.swipe.lockedAxis = '';
@@ -1506,6 +1511,7 @@
 
       swipeSurface.addEventListener('touchstart', (event) => {
         if (appView.classList.contains('hidden') || (loginModal && !loginModal.classList.contains('hidden'))) return;
+        if (state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
         if (event.touches.length !== 1) {
           resetSwipeState();
           return;
@@ -1514,6 +1520,7 @@
         const touch = event.touches[0];
         state.swipe.startX = touch.clientX;
         state.swipe.startY = touch.clientY;
+        state.swipe.startTime = Date.now();
         state.swipe.active = true;
         state.swipe.ignore = shouldIgnoreSwipeStart(event.target);
         state.swipe.lockedAxis = '';
@@ -1527,12 +1534,26 @@
 
         const deltaX = touch.clientX - state.swipe.startX;
         const deltaY = touch.clientY - state.swipe.startY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
 
         if (!state.swipe.lockedAxis) {
-          if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
-          state.swipe.lockedAxis = Math.abs(deltaX) > Math.abs(deltaY) * 1.15 ? 'x' : 'y';
+          if (absX < 10 && absY < 10) return;
+          if (absY > absX * 1.1) {
+            state.swipe.lockedAxis = 'y';
+            return;
+          }
+          if (absX > absY * 1.35) {
+            state.swipe.lockedAxis = 'x';
+          } else {
+            return;
+          }
         }
-      }, { passive: true });
+
+        if (state.swipe.lockedAxis === 'x') {
+          event.preventDefault();
+        }
+      }, { passive: false });
 
       swipeSurface.addEventListener('touchend', (event) => {
         if (!state.swipe.active) return;
@@ -1542,25 +1563,41 @@
         const lockedAxis = state.swipe.lockedAxis;
         const startX = state.swipe.startX;
         const startY = state.swipe.startY;
+        const startTime = state.swipe.startTime;
         resetSwipeState();
 
-        if (!touch || ignore || lockedAxis !== 'x') return;
+        if (!touch || ignore || lockedAxis !== 'x' || state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
 
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
         const absX = Math.abs(deltaX);
         const absY = Math.abs(deltaY);
+        const elapsed = Math.max(1, Date.now() - startTime);
+        const velocityX = absX / elapsed;
 
-        if (absX < 55 || absY > 90 || absX < absY * 1.35) return;
+        const isIntentionalHorizontalSwipe = absX >= 70 && absY <= 60 && absX > absY * 1.6;
+        const isFastEnough = velocityX >= 0.22;
+
+        if (!isIntentionalHorizontalSwipe || !isFastEnough) return;
+
+        state.swipe.navigating = true;
+        state.swipe.cooldownUntil = Date.now() + 320;
 
         if (deltaX < 0) {
           goToAdjacentTab(1);
         } else {
           goToAdjacentTab(-1);
         }
+
+        setTimeout(() => {
+          state.swipe.navigating = false;
+        }, 260);
       }, { passive: true });
 
-      swipeSurface.addEventListener('touchcancel', resetSwipeState, { passive: true });
+      swipeSurface.addEventListener('touchcancel', () => {
+        resetSwipeState();
+        state.swipe.navigating = false;
+      }, { passive: true });
     }
 
     async function apiRequest(params) {
