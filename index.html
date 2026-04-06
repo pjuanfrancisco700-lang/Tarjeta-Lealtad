@@ -858,7 +858,8 @@
     }
 
     .cup.fill-pop {
-      animation: cupFillPop 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+      animation: cupFillPop 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: var(--fill-delay, 0ms);
     }
 
     .points-feedback {
@@ -1227,7 +1228,13 @@
       activeTabId: 'tabHome',
       sound: {
         pointLastPlayedAt: 0,
-        rewardLastPlayedAt: 0
+        rewardLastPlayedAt: 0,
+        lastPoints: 0,
+        rewardPlayed: false,
+        audioUnlocked: false,
+        unlockHandlersBound: false,
+        pointTimers: [],
+        rewardTimer: null
       },
       swipe: {
         startX: 0,
@@ -1245,16 +1252,28 @@
     const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
     const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
 
-    // ARCHIVOS DE AUDIO REQUERIDOS:
-    // sound-point.mp3  → sonido cuando se agrega un punto
-    // sound-reward.mp3 → sonido cuando completa la meta
+    // SISTEMA DE SONIDOS
+    // sound-point.mp3  → sonido de punto
+    // sound-reward.mp3 → sonido de recompensa
+    //
+    // NOTA:
+    // Los audios deben estar en la raíz del proyecto
     const soundFx = {
       point: new Audio('sound-point.mp3'),
       reward: new Audio('sound-reward.mp3')
     };
 
+    const SOUND_CONFIG = {
+      pointStepDelay: 120,
+      pointPeakDelay: 340,
+      rewardExtraDelay: 220
+    };
+
     Object.values(soundFx).forEach((audio) => {
       audio.preload = 'auto';
+      audio.playsInline = true;
+      audio.setAttribute?.('playsinline', 'true');
+      audio.setAttribute?.('webkit-playsinline', 'true');
     });
 
     function preloadSoundEffects() {
@@ -1265,17 +1284,84 @@
       });
     }
 
-    function playSoundEffect(type) {
+    function clearPointSoundTimers() {
+      if (!state.sound.pointTimers.length) return;
+      state.sound.pointTimers.forEach((timerId) => clearTimeout(timerId));
+      state.sound.pointTimers = [];
+    }
+
+    function clearRewardSoundTimer() {
+      if (state.sound.rewardTimer) {
+        clearTimeout(state.sound.rewardTimer);
+        state.sound.rewardTimer = null;
+      }
+      clearTimeout(state.rewardSoundTimer);
+      state.rewardSoundTimer = null;
+    }
+
+    function clearAllSoundTimers() {
+      clearPointSoundTimers();
+      clearRewardSoundTimer();
+    }
+
+    function unlockAudioPlayback() {
+      if (state.sound.audioUnlocked) return;
+      state.sound.audioUnlocked = true;
+
+      Object.values(soundFx).forEach((audio) => {
+        try {
+          audio.muted = true;
+          audio.currentTime = 0;
+          const playPromise = audio.play();
+          if (playPromise && typeof playPromise.then === 'function') {
+            playPromise
+              .then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.muted = false;
+              })
+              .catch(() => {
+                audio.muted = false;
+              });
+          } else {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+          }
+        } catch {
+          audio.muted = false;
+        }
+      });
+
+      detachAudioUnlockHandlers();
+    }
+
+    function attachAudioUnlockHandlers() {
+      if (state.sound.unlockHandlersBound) return;
+      state.sound.unlockHandlersBound = true;
+      document.addEventListener('touchstart', unlockAudioPlayback, { passive: true });
+      document.addEventListener('click', unlockAudioPlayback, { passive: true });
+    }
+
+    function detachAudioUnlockHandlers() {
+      if (!state.sound.unlockHandlersBound) return;
+      document.removeEventListener('touchstart', unlockAudioPlayback, { passive: true });
+      document.removeEventListener('click', unlockAudioPlayback, { passive: true });
+      state.sound.unlockHandlersBound = false;
+    }
+
+    function playSoundEffect(type, options = {}) {
       const audio = soundFx[type];
       if (!audio) return;
 
+      const { force = false } = options;
       const now = Date.now();
-      const minGap = type === 'reward' ? 700 : 220;
+      const minGap = type === 'reward' ? 700 : 90;
       const lastPlayedAt = type === 'reward'
         ? state.sound.rewardLastPlayedAt
         : state.sound.pointLastPlayedAt;
 
-      if (now - lastPlayedAt < minGap) return;
+      if (!force && now - lastPlayedAt < minGap) return;
 
       if (type === 'reward') {
         state.sound.rewardLastPlayedAt = now;
@@ -1293,23 +1379,64 @@
       } catch {}
     }
 
+    function schedulePointSound(delay) {
+      const timerId = setTimeout(() => {
+        playSoundEffect('point', { force: true });
+        state.sound.pointTimers = state.sound.pointTimers.filter((id) => id !== timerId);
+      }, Math.max(0, delay));
+
+      state.sound.pointTimers.push(timerId);
+    }
+
+    function scheduleRewardSound(delay) {
+      clearRewardSoundTimer();
+      state.sound.rewardTimer = setTimeout(() => {
+        playSoundEffect('reward', { force: true });
+        state.sound.rewardTimer = null;
+        state.rewardSoundTimer = null;
+      }, Math.max(0, delay));
+
+      state.rewardSoundTimer = state.sound.rewardTimer;
+    }
+
+    function setSoundStateBaseline(points, rewardAvailable) {
+      state.sound.lastPoints = Math.max(0, safeNumber(points, 0));
+      state.sound.rewardPlayed = Boolean(rewardAvailable);
+    }
+
     function syncPointSounds(previousPoints, currentPoints, goal, previousRewardAvailable, rewardAvailable) {
-      const from = Math.max(0, safeNumber(previousPoints, 0));
+      const from = Math.max(0, safeNumber(previousPoints, state.sound.lastPoints));
       const to = Math.max(0, safeNumber(currentPoints, 0));
+      const effectiveFrom = Math.max(from, Math.max(0, safeNumber(state.sound.lastPoints, 0)));
 
-      if (to <= from) return;
+      if (to <= effectiveFrom) {
+        setSoundStateBaseline(to, rewardAvailable);
+        return;
+      }
 
-      playSoundEffect('point');
+      clearAllSoundTimers();
 
-      const justCompletedGoal = from < goal && to >= goal;
+      const gainedPoints = to - effectiveFrom;
+
+      for (let i = 0; i < gainedPoints; i += 1) {
+        const delay = (i * SOUND_CONFIG.pointStepDelay) + SOUND_CONFIG.pointPeakDelay;
+        schedulePointSound(delay);
+      }
+
+      const justCompletedGoal = effectiveFrom < goal && to >= goal;
       const rewardJustUnlocked = !previousRewardAvailable && rewardAvailable;
 
-      if (justCompletedGoal || rewardJustUnlocked) {
-        clearTimeout(state.rewardSoundTimer);
-        state.rewardSoundTimer = setTimeout(() => {
-          playSoundEffect('reward');
-        }, 380);
+      if ((justCompletedGoal || rewardJustUnlocked) && !state.sound.rewardPlayed) {
+        const rewardDelay = ((gainedPoints - 1) * SOUND_CONFIG.pointStepDelay)
+          + SOUND_CONFIG.pointPeakDelay
+          + SOUND_CONFIG.rewardExtraDelay;
+        scheduleRewardSound(rewardDelay);
+        state.sound.rewardPlayed = true;
+      } else if (!rewardAvailable) {
+        state.sound.rewardPlayed = false;
       }
+
+      state.sound.lastPoints = to;
     }
 
     function showRegister(message = '', type = 'error') {
@@ -1470,13 +1597,20 @@
       const fragment = document.createDocumentFragment();
       const prev = previousPoints === null ? points : Math.max(0, safeNumber(previousPoints, 0));
 
+      let newFillIndex = 0;
+
       for (let i = 1; i <= goal; i += 1) {
         const cup = document.createElement('div');
         const isFilled = i <= points;
         const isNewFill = points > prev && i > prev && i <= points;
         const isGoalCup = i === goal;
+        const fillDelay = isNewFill ? newFillIndex * SOUND_CONFIG.pointStepDelay : 0;
         cup.className = `cup ${isFilled ? 'filled' : ''} ${isNewFill ? 'fill-pop' : ''} ${isGoalCup ? 'goal-cup' : ''}`.trim();
         cup.setAttribute('aria-hidden', 'true');
+        cup.style.setProperty('--fill-delay', `${fillDelay}ms`);
+        if (isNewFill) {
+          newFillIndex += 1;
+        }
         cup.innerHTML = `
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M7 8.5h8.5a1.5 1.5 0 0 1 1.5 1.5v3.5A4.5 4.5 0 0 1 12.5 18H10A4 4 0 0 1 6 14v-4a1.5 1.5 0 0 1 1-1.5Z"></path>
@@ -1702,6 +1836,7 @@
         syncPointSounds(previousPoints, puntos, meta, previousRewardAvailable, premioDisponible);
       } else {
         ui.pointsCount.textContent = puntos;
+        setSoundStateBaseline(puntos, premioDisponible);
       }
     }
 
@@ -2067,9 +2202,11 @@
       state.movimientos = [];
       state.qrPendingId = null;
       state.qrRenderedId = null;
-      clearTimeout(state.rewardSoundTimer);
+      clearAllSoundTimers();
       state.sound.pointLastPlayedAt = 0;
       state.sound.rewardLastPlayedAt = 0;
+      state.sound.lastPoints = 0;
+      state.sound.rewardPlayed = false;
       ui.qrImage.removeAttribute('src');
       state.dashboardLoaded = false;
       clearFormInputs();
@@ -2181,6 +2318,7 @@
       }
     });
 
+    attachAudioUnlockHandlers();
     setupSwipeNavigation();
     bootstrap();
   </script>
