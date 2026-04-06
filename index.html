@@ -1222,8 +1222,13 @@
       pollInFlight: false,
       pollIntervalMs: 2500,
       feedbackTimer: null,
+      rewardSoundTimer: null,
       tabAnimationTimer: null,
       activeTabId: 'tabHome',
+      sound: {
+        pointLastPlayedAt: 0,
+        rewardLastPlayedAt: 0
+      },
       swipe: {
         startX: 0,
         startY: 0,
@@ -1239,6 +1244,73 @@
 
     const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
     const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
+
+    // ARCHIVOS DE AUDIO REQUERIDOS:
+    // sound-point.mp3  → sonido cuando se agrega un punto
+    // sound-reward.mp3 → sonido cuando completa la meta
+    const soundFx = {
+      point: new Audio('sound-point.mp3'),
+      reward: new Audio('sound-reward.mp3')
+    };
+
+    Object.values(soundFx).forEach((audio) => {
+      audio.preload = 'auto';
+    });
+
+    function preloadSoundEffects() {
+      Object.values(soundFx).forEach((audio) => {
+        try {
+          audio.load();
+        } catch {}
+      });
+    }
+
+    function playSoundEffect(type) {
+      const audio = soundFx[type];
+      if (!audio) return;
+
+      const now = Date.now();
+      const minGap = type === 'reward' ? 700 : 220;
+      const lastPlayedAt = type === 'reward'
+        ? state.sound.rewardLastPlayedAt
+        : state.sound.pointLastPlayedAt;
+
+      if (now - lastPlayedAt < minGap) return;
+
+      if (type === 'reward') {
+        state.sound.rewardLastPlayedAt = now;
+      } else {
+        state.sound.pointLastPlayedAt = now;
+      }
+
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+      } catch {}
+    }
+
+    function syncPointSounds(previousPoints, currentPoints, goal, previousRewardAvailable, rewardAvailable) {
+      const from = Math.max(0, safeNumber(previousPoints, 0));
+      const to = Math.max(0, safeNumber(currentPoints, 0));
+
+      if (to <= from) return;
+
+      playSoundEffect('point');
+
+      const justCompletedGoal = from < goal && to >= goal;
+      const rewardJustUnlocked = !previousRewardAvailable && rewardAvailable;
+
+      if (justCompletedGoal || rewardJustUnlocked) {
+        clearTimeout(state.rewardSoundTimer);
+        state.rewardSoundTimer = setTimeout(() => {
+          playSoundEffect('reward');
+        }, 380);
+      }
+    }
 
     function showRegister(message = '', type = 'error') {
       stopAutoRefresh();
@@ -1586,6 +1658,7 @@
 
       const {
         previousPoints = null,
+        previousRewardAvailable = false,
         animatePoints = false
       } = options;
 
@@ -1599,12 +1672,6 @@
       ui.perfilTelefono.textContent = safeText(c.telefono, 'No registrado');
       ui.perfilCorreo.textContent = safeText(c.correo, 'No registrado');
       ui.perfilId.textContent = safeText(c.id_cliente);
-
-      if (animatePoints && previousPoints !== null && puntos > safeNumber(previousPoints, 0)) {
-        playPointsIncreaseFeedback(previousPoints, puntos);
-      } else {
-        ui.pointsCount.textContent = puntos;
-      }
 
       ui.goalCount.textContent = meta;
       ui.heroText.textContent = 'Tu tarjeta está activa.';
@@ -1629,6 +1696,13 @@
 
       renderCups(puntos, meta, previousPoints);
       renderMovimientos();
+
+      if (animatePoints && previousPoints !== null && puntos > safeNumber(previousPoints, 0)) {
+        playPointsIncreaseFeedback(previousPoints, puntos);
+        syncPointSounds(previousPoints, puntos, meta, previousRewardAvailable, premioDisponible);
+      } else {
+        ui.pointsCount.textContent = puntos;
+      }
     }
 
     function getTabIndex(tabId) {
@@ -1827,6 +1901,7 @@
       const shouldPreserveTab = preserveActiveTab || !appView.classList.contains('hidden');
       const activeTabId = shouldPreserveTab ? getActiveTabId() : 'tabHome';
       const previousPoints = state.cliente ? safeNumber(state.cliente.puntos, 0) : null;
+      const previousRewardAvailable = String(state.cliente?.premio_disponible || 'NO').toUpperCase() === 'SI';
 
       const data = await apiRequest({ action: 'getClientAny', input: identificador });
       if (!data || data.ok === false || !data.cliente) {
@@ -1863,6 +1938,7 @@
 
       renderCliente({
         previousPoints,
+        previousRewardAvailable,
         animatePoints: shouldAnimateIncrease
       });
 
@@ -1991,6 +2067,9 @@
       state.movimientos = [];
       state.qrPendingId = null;
       state.qrRenderedId = null;
+      clearTimeout(state.rewardSoundTimer);
+      state.sound.pointLastPlayedAt = 0;
+      state.sound.rewardLastPlayedAt = 0;
       ui.qrImage.removeAttribute('src');
       state.dashboardLoaded = false;
       clearFormInputs();
@@ -1998,6 +2077,8 @@
     }
 
     async function bootstrap() {
+      preloadSoundEffects();
+
       const localCliente = getLocalCliente();
       const cached = getCache();
 
