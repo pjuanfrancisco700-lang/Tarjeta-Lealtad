@@ -1223,6 +1223,7 @@
       pollIntervalMs: 2500,
       feedbackTimer: null,
       tabAnimationTimer: null,
+      activeTabId: 'tabHome',
       swipe: {
         startX: 0,
         startY: 0,
@@ -1241,6 +1242,7 @@
 
     function showRegister(message = '', type = 'error') {
       stopAutoRefresh();
+      state.activeTabId = 'tabHome';
       registerView.classList.remove('hidden');
       appView.classList.add('hidden');
       closeLoginModal();
@@ -1452,8 +1454,13 @@
     }
 
     function getActiveTabId() {
+      if (state.activeTabId && tabPanels.some((panel) => panel.id === state.activeTabId)) {
+        return state.activeTabId;
+      }
+
       const activeButton = navButtons.find((btn) => btn.classList.contains('active'));
-      return activeButton?.dataset.tab || 'tabHome';
+      state.activeTabId = activeButton?.dataset.tab || 'tabHome';
+      return state.activeTabId;
     }
 
     function animatePointsValue(from, to, duration = 420) {
@@ -1649,8 +1656,10 @@
         animate = false
       } = options;
 
+      if (!tabId || !tabPanels.some((panel) => panel.id === tabId)) return;
+
       const currentTabId = getActiveTabId();
-      if (!tabId || currentTabId === tabId) return;
+      if (currentTabId === tabId) return;
 
       tabPanels.forEach((panel) => {
         panel.classList.toggle('hidden', panel.id !== tabId);
@@ -1659,6 +1668,8 @@
       navButtons.forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.tab === tabId);
       });
+
+      state.activeTabId = tabId;
 
       if (animate) {
         animateTabEntry(tabId, direction === 'prev' ? 'prev' : 'next');
@@ -1732,11 +1743,11 @@
 
         if (!state.swipe.lockedAxis) {
           if (absX < 10 && absY < 10) return;
-          if (absY > absX * 1.1) {
+          if (absY > absX * 1.15) {
             state.swipe.lockedAxis = 'y';
             return;
           }
-          if (absX > absY * 1.35) {
+          if (absX > absY * 1.5) {
             state.swipe.lockedAxis = 'x';
           } else {
             return;
@@ -1768,8 +1779,8 @@
         const elapsed = Math.max(1, Date.now() - startTime);
         const velocityX = absX / elapsed;
 
-        const isIntentionalHorizontalSwipe = absX >= 70 && absY <= 60 && absX > absY * 1.6;
-        const isFastEnough = velocityX >= 0.22;
+        const isIntentionalHorizontalSwipe = absX >= 78 && absY <= 52 && absX > absY * 1.8;
+        const isFastEnough = velocityX >= 0.2;
 
         if (!isIntentionalHorizontalSwipe || !isFastEnough) return;
 
@@ -1813,7 +1824,8 @@
         preserveActiveTab = false
       } = options;
 
-      const activeTabId = preserveActiveTab ? getActiveTabId() : 'tabHome';
+      const shouldPreserveTab = preserveActiveTab || !appView.classList.contains('hidden');
+      const activeTabId = shouldPreserveTab ? getActiveTabId() : 'tabHome';
       const previousPoints = state.cliente ? safeNumber(state.cliente.puntos, 0) : null;
 
       const data = await apiRequest({ action: 'getClientAny', input: identificador });
@@ -1858,7 +1870,7 @@
         showApp();
       }
 
-      setActiveTab(preserveActiveTab ? activeTabId : 'tabHome', { animate: false });
+      setActiveTab(shouldPreserveTab ? activeTabId : 'tabHome', { animate: false });
       startAutoRefresh();
     }
 
@@ -2000,7 +2012,10 @@
           showApp();
           setActiveTab('tabHome', { animate: false });
 
-          cargarClienteDesdeServidor(localCliente.id_cliente).catch(() => {});
+          cargarClienteDesdeServidor(localCliente.id_cliente, {
+            silent: true,
+            preserveActiveTab: true
+          }).catch(() => {});
           return;
         }
 
