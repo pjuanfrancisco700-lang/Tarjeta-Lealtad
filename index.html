@@ -94,7 +94,7 @@
       content: '';
       position: absolute;
       inset: 0 0 auto 0;
-      height: 190px;
+      height: 178px;
       background:
         linear-gradient(135deg, rgba(192,94,81,0.94) 0%, rgba(90,110,90,0.92) 100%);
       opacity: 0.98;
@@ -102,7 +102,7 @@
     }
 
     .status-space {
-      height: 14px;
+      height: 10px;
       position: relative;
       z-index: 1;
     }
@@ -110,7 +110,7 @@
     .screen {
       position: relative;
       min-height: 100%;
-      padding: 12px;
+      padding: 10px;
       padding-bottom: calc(88px + env(safe-area-inset-bottom));
       touch-action: pan-y;
       z-index: 1;
@@ -120,7 +120,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       position: relative;
       z-index: 1;
     }
@@ -128,7 +128,7 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       font-weight: 700;
       letter-spacing: -0.03em;
       color: #fffdf9;
@@ -189,12 +189,12 @@
       border: 1px solid rgba(216, 213, 196, 0.55);
       box-shadow: var(--shadow);
       border-radius: var(--radius-xl);
-      padding: 16px;
+      padding: 14px;
       position: relative;
     }
 
     .hero {
-      margin-top: 2px;
+      margin-top: 0;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.12) 0 0),
         linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
@@ -210,7 +210,7 @@
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin: 0 0 10px;
+      margin: 0 0 8px;
       font-weight: 700;
     }
 
@@ -235,8 +235,8 @@
     .hero p,
     .register-sub {
       color: var(--muted);
-      margin: 10px 0 0;
-      line-height: 1.5;
+      margin: 6px 0 0;
+      line-height: 1.42;
       font-size: 13px;
     }
 
@@ -253,15 +253,15 @@
 
     .stack {
       display: grid;
-      gap: 10px;
+      gap: 9px;
     }
 
-    .mt-18 { margin-top: 18px; }
-    .mt-20 { margin-top: 20px; }
+    .mt-18 { margin-top: 16px; }
+    .mt-20 { margin-top: 18px; }
 
     .progress-wrap {
       display: grid;
-      gap: 10px;
+      gap: 9px;
       position: relative;
       overflow: hidden;
       transition: box-shadow 0.28s ease, transform 0.28s ease, border-color 0.28s ease;
@@ -271,7 +271,7 @@
       display: flex;
       align-items: end;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
 
     .progress-head h2 {
@@ -294,7 +294,7 @@
     .cups {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       flex-wrap: wrap;
       padding-top: 2px;
     }
@@ -394,8 +394,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      padding: 12px;
+      gap: 6px;
+      padding: 10px;
       border-radius: 20px;
       background: linear-gradient(180deg, rgba(245,194,101,0.16), rgba(245,194,101,0.09));
       border: 1px solid rgba(245,194,101,0.20);
@@ -415,17 +415,17 @@
 
     .qr-card {
       text-align: center;
-      padding-top: 14px;
-      padding-bottom: 14px;
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
 
     .qr-box {
       width: min(100%, 164px);
       aspect-ratio: 1;
-      margin: 0 auto 12px;
+      margin: 0 auto 10px;
       background: #fffdf9;
       border-radius: 24px;
-      padding: 16px;
+      padding: 14px;
       border: 1px solid rgba(216,213,196,0.55);
       box-shadow: 0 12px 24px rgba(67, 58, 45, 0.08);
       display: grid;
@@ -449,8 +449,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
+      gap: 9px;
+      margin-bottom: 6px;
     }
 
     .section-title h3 {
@@ -473,8 +473,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 12px 0;
+      gap: 9px;
+      padding: 11px 0;
       border-top: 1px solid rgba(90,110,90,0.08);
     }
 
@@ -490,7 +490,7 @@
     .row-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
@@ -544,7 +544,7 @@
     .secondary-btn {
       width: 100%;
       border-radius: 18px;
-      padding: 13px 14px;
+      padding: 12px 14px;
       font-size: 15px;
       font-weight: 800;
       letter-spacing: -0.02em;
@@ -581,8 +581,8 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 12px;
-      padding: calc(28px + env(safe-area-inset-top)) 14px 18px;
+      gap: 10px;
+      padding: calc(24px + env(safe-area-inset-top)) 14px 16px;
       background:
         radial-gradient(circle at top left, rgba(245,194,101,0.16) 0%, rgba(245,194,101,0) 28%),
         linear-gradient(180deg, #f6f1e8 0%, #f3eee5 100%);
@@ -594,14 +594,18 @@
 
     .register-hero {
   text-align: left;
-  padding: 10px 6px 0;
+  padding: 8px 6px 0;
   color: var(--text);
   position: relative;
   z-index: 1;
 }
 
 .register-hero .brand {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+.register-brand-subtitle {
+  display: none;
 }
 
     .register .brand {
@@ -622,14 +626,14 @@
       border: 1px solid rgba(216,213,196,0.58);
       box-shadow: var(--shadow);
       border-radius: 30px;
-      padding: 18px;
+      padding: 16px;
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .field {
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
 
     .field label {
@@ -643,7 +647,7 @@
       border: 1px solid rgba(216,213,196,0.88);
       background: #fbf8f2;
       border-radius: 18px;
-      padding: 14px 15px;
+      padding: 13px 15px;
       font-size: 15px;
       outline: none;
       color: var(--text);
@@ -658,12 +662,12 @@
     .register-note {
       font-size: 12px;
       color: var(--muted);
-      line-height: 1.5;
-      margin-top: 2px;
+      line-height: 1.42;
+      margin-top: 0;
     }
 
     .feedback {
-      padding: 14px 15px;
+      padding: 13px 15px;
       border-radius: 16px;
       font-size: 14px;
       line-height: 1.4;
@@ -690,7 +694,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 9px;
       padding: 8px 0 2px;
       z-index: 10;
       pointer-events: none;
@@ -724,7 +728,7 @@
 
     .small-meta {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       margin-top: 8px;
     }
@@ -744,8 +748,8 @@
       text-align: center;
       color: var(--muted);
       font-size: 12px;
-      margin-top: 12px;
-      line-height: 1.5;
+      margin-top: 10px;
+      line-height: 1.42;
     }
 
     .tab-panel {
@@ -788,7 +792,7 @@
     .register-actions,
     .modal-actions {
       display: grid;
-      gap: 10px;
+      gap: 9px;
     }
 
     .divider-text {
@@ -819,9 +823,9 @@
       border: 1px solid rgba(216,213,196,0.70);
       box-shadow: 0 24px 60px rgba(67,58,45,0.14);
       border-radius: 28px;
-      padding: 18px;
+      padding: 16px;
       display: grid;
-      gap: 14px;
+      gap: 12px;
       margin-top: auto;
       transition: margin-bottom 0.22s ease;
     }
@@ -834,7 +838,7 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
 
     .modal-head h3 {
@@ -844,7 +848,7 @@
     }
 
     .modal-head p {
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
@@ -962,7 +966,7 @@
       }
 
       .cups {
-        gap: 8px;
+        gap: 6px;
       }
 
       .cup {
@@ -981,12 +985,12 @@
       }
 
       .screen {
-        padding: 12px;
+        padding: 10px;
         padding-bottom: calc(84px + env(safe-area-inset-bottom));
       }
 
       .register {
-        padding: calc(22px + env(safe-area-inset-top)) 12px calc(18px + env(safe-area-inset-bottom));
+        padding: calc(20px + env(safe-area-inset-top)) 12px calc(16px + env(safe-area-inset-bottom));
       }
 
       .phone {
@@ -994,7 +998,7 @@
       }
 
       .phone::before {
-        height: 175px;
+        height: 166px;
       }
 
       .qr-box {
@@ -1013,10 +1017,10 @@
         <div class="register-hero">
           <div class="brand">
             <div class="brand-badge" aria-label="Coffee Bike logo"></div>
-            <div>Coffee Bike</div>
+            <div>TARJETA DIGITAL</div>
           </div>
           
-          <p class="eyebrow">Tarjeta digital</p>
+          <p class="eyebrow register-brand-subtitle">Tarjeta digital</p>
           <h1 class="register-title"><span class="headline-highlight">Tu café te premia.</span></h1>
           <p class="register-sub">Regístrate una vez. Guarda tu tarjeta. Acumula y gana</p>
         </div>
@@ -1075,7 +1079,7 @@
         <div class="topbar">
           <div class="brand">
   <div class="brand-badge" aria-label="Coffee Bike logo"></div>
-  <div>Coffee Bike</div>
+  <div>TARJETA DIGITAL</div>
 </div>
           <button class="icon-btn" id="btnSalir" title="Cerrar sesión local" type="button">⌂</button>
         </div>
