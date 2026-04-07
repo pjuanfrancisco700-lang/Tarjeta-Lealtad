@@ -150,9 +150,14 @@
     }
 
     .brand-badge {
-      font-size: 14px;
+      font-size: 0;
       font-weight: 800;
       letter-spacing: -0.04em;
+      overflow: hidden;
+      background-image: url('logo-badge.png');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
     }
 
     .icon-btn {
@@ -581,11 +586,15 @@
     }
 
     .register .brand-badge {
-      background: rgba(90,110,90,0.10);
+      background-color: rgba(90,110,90,0.10);
       border: 1px solid rgba(90,110,90,0.10);
-      color: var(--accent);
+      color: transparent;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+      background-image: url('logo-badge.png');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
     }
 
     .register-card {
@@ -983,7 +992,7 @@
       <section id="registerView" class="register hidden">
         <div class="register-hero">
           <div class="brand">
-            <div class="brand-badge">CU</div>
+            <div class="brand-badge" aria-label="Coffee Bike logo"></div>
             <div>Coffee Bike</div>
           </div>
           
@@ -1045,7 +1054,7 @@
       <section id="appView" class="screen hidden">
         <div class="topbar">
           <div class="brand">
-  <div class="brand-badge">CB</div>
+  <div class="brand-badge" aria-label="Coffee Bike logo"></div>
   <div>Coffee Bike</div>
 </div>
           <button class="icon-btn" id="btnSalir" title="Cerrar sesión local" type="button">⌂</button>
