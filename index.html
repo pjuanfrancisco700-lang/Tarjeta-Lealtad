@@ -2567,7 +2567,14 @@
 
     btnCrearCuenta.addEventListener('click', crearCuenta);
     btnYaTengoCuenta.addEventListener('click', openLoginModal);
-    btnIngresarCuenta.addEventListener('click', ingresarCuenta);
+    btnIngresarCuenta.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      ingresarCuenta();
+    });
+
+    btnIngresarCuenta.addEventListener('click', (event) => {
+      event.preventDefault();
+    });
     btnCerrarModal.addEventListener('click', closeLoginModal);
     btnCancelarModal.addEventListener('click', closeLoginModal);
     btnSalir.addEventListener('click', logoutLocal);
