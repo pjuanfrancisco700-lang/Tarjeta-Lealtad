@@ -728,6 +728,32 @@
       transform: scale(0.985);
     }
 
+    .phone.syncing::after {
+      content: attr(data-sync-label);
+      position: absolute;
+      top: calc(14px + env(safe-area-inset-top));
+      right: 14px;
+      z-index: 12;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(247,245,242,0.84);
+      border: 1px solid rgba(201,184,166,0.44);
+      box-shadow: 0 10px 22px rgba(30,27,24,0.08);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: none;
+      animation: syncBadgeFadeIn 0.18s ease;
+    }
+
+    @keyframes syncBadgeFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .hidden {
       display: none !important;
     }
@@ -1341,8 +1367,8 @@
           </div>
 
           <div class="field">
-            <label for="loginIdCliente">Teléfono, correo o ID</label>
-            <input id="loginIdCliente" type="text" placeholder="Tu teléfono, correo o ID" autocomplete="username" autofocus autocapitalize="off" autocorrect="off" spellcheck="false" />
+            <label for="loginIdCliente">Teléfono o correo</label>
+            <input id="loginIdCliente" type="text" placeholder="Tu teléfono o correo" autocomplete="username" autofocus autocapitalize="off" autocorrect="off" spellcheck="false" />
           </div>
 
           <div id="loginFeedback" class="feedback error hidden"></div>
@@ -1352,7 +1378,7 @@
             <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
           </div>
 
-          <p class="center-note" style="margin-top:0;">Puedes ingresar con el dato que recuerdes: teléfono, correo o ID del cliente.</p>
+          <p class="center-note" style="margin-top:0;">Puedes ingresar únicamente con tu teléfono de 8 dígitos o tu correo registrado.</p>
         </div>
       </div>
 
@@ -1510,6 +1536,7 @@
     const loginIdCliente = document.getElementById('loginIdCliente');
     const contactoInput = document.getElementById('contacto');
     const nombreInput = document.getElementById('nombre');
+    const phoneShell = document.querySelector('.phone');
 
     const ui = {
       saludoNombre: document.getElementById('saludoNombre'),
@@ -1573,7 +1600,9 @@
         suppressClickUntil: 0,
         lockTabUntil: 0,
         preferredTabId: 'tabHome'
-      }
+      },
+      syncStatusTimer: null,
+      bootstrappingFastSession: false
     };
 
     const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
@@ -1768,6 +1797,7 @@
 
     function showRegister(message = '', type = 'error') {
       stopAutoRefresh();
+      setSyncStatus(false);
       state.activeTabId = 'tabHome';
       registerView.classList.remove('hidden');
       appView.classList.add('hidden');
@@ -1890,6 +1920,168 @@
       nombreInput.value = '';
       contactoInput.value = '';
       loginIdCliente.value = '';
+    }
+
+    function setSyncStatus(active, label = 'Actualizando...') {
+      if (!phoneShell) return;
+
+      clearTimeout(state.syncStatusTimer);
+
+      if (!active) {
+        phoneShell.classList.remove('syncing');
+        phoneShell.removeAttribute('data-sync-label');
+        return;
+      }
+
+      phoneShell.dataset.syncLabel = label;
+      phoneShell.classList.add('syncing');
+      state.syncStatusTimer = setTimeout(() => {
+        phoneShell.classList.remove('syncing');
+        phoneShell.removeAttribute('data-sync-label');
+      }, 2600);
+    }
+
+    function normalizeIdentifier(value) {
+      const raw = String(value || '').trim();
+      const digits = raw.replace(/\D/g, '');
+      if (digits.length === 8) return digits;
+      return raw.toLowerCase();
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(value || '').trim());
+    }
+
+    function parseContactoGuatemala(value) {
+      const raw = String(value || '').trim();
+      if (!raw) {
+        return { ok: false, message: 'Ingresa tu teléfono o correo.' };
+      }
+
+      const digits = raw.replace(/\D/g, '');
+      if (digits.length === 8) {
+        return { ok: true, type: 'telefono', value: digits };
+      }
+
+      if (raw.includes('@') && isValidEmail(raw)) {
+        return { ok: true, type: 'correo', value: raw.toLowerCase() };
+      }
+
+      return {
+        ok: false,
+        message: 'Solo se permiten teléfonos de Guatemala de 8 dígitos o correos válidos.'
+      };
+    }
+
+    function clienteMatchesIdentificador(cliente, identificador) {
+      if (!cliente || !identificador) return false;
+      const target = normalizeIdentifier(identificador);
+      const candidatos = [cliente.id_cliente, cliente.telefono, cliente.correo, cliente.nombre]
+        .map(normalizeIdentifier)
+        .filter(Boolean);
+      return candidatos.includes(target);
+    }
+
+    function hydrateClienteSession(snapshot = {}, options = {}) {
+      const cliente = snapshot?.cliente || null;
+      if (!cliente) return false;
+
+      const {
+        movimientos = [],
+        config = null,
+        syncLabel = '',
+        preserveActiveTab = false
+      } = options;
+
+      state.cliente = cliente;
+      state.movimientos = Array.isArray(movimientos) ? movimientos : [];
+
+      if (config) {
+        applyDashboardConfig(config);
+      } else {
+        const cachedDashboard = getDashboardCache();
+        if (cachedDashboard?.config) {
+          applyDashboardConfig(cachedDashboard.config);
+        } else if (!state.dashboardLoaded) {
+          applyDashboardConfig({});
+        }
+      }
+
+      saveLocalCliente(state.cliente);
+      saveCache({
+        cliente: state.cliente,
+        movimientos: state.movimientos,
+        config: {
+          meta_puntos: state.metaPuntos,
+          recompensa: state.recompensa,
+          nombre_negocio: state.negocio
+        }
+      });
+
+      renderCliente();
+      showApp();
+      setActiveTab(preserveActiveTab ? getActiveTabId() : 'tabHome', { animate: false });
+
+      if (syncLabel) {
+        setSyncStatus(true, syncLabel);
+      }
+
+      return true;
+    }
+
+    function buildFastRegisterCliente(nombre, contacto, clienteServidor = {}) {
+      const esCorreo = String(contacto || '').includes('@');
+      const fallbackId = clienteServidor.id_cliente || `TMP-${Date.now()}`;
+      return {
+        id_cliente: fallbackId,
+        nombre: clienteServidor.nombre || nombre,
+        telefono: clienteServidor.telefono || (esCorreo ? '' : contacto),
+        correo: clienteServidor.correo || (esCorreo ? contacto : ''),
+        puntos: safeNumber(clienteServidor.puntos, 0),
+        premio_disponible: clienteServidor.premio_disponible || 'NO',
+        fecha_registro: clienteServidor.fecha_registro || new Date().toISOString()
+      };
+    }
+
+    function getBestLocalSnapshotForLogin(identificador) {
+      const localCliente = getLocalCliente();
+      const cached = getCache();
+      const matchesLocal = clienteMatchesIdentificador(localCliente, identificador);
+      const matchesCached = clienteMatchesIdentificador(cached?.cliente, identificador);
+
+      if (matchesCached) {
+        return {
+          cliente: cached.cliente,
+          movimientos: Array.isArray(cached.movimientos) ? cached.movimientos : [],
+          config: cached.config || null
+        };
+      }
+
+      if (matchesLocal) {
+        return {
+          cliente: localCliente,
+          movimientos: [],
+          config: cached?.config || null
+        };
+      }
+
+      return null;
+    }
+
+    function backgroundSyncCliente(identificador, options = {}) {
+      return cargarClienteDesdeServidor(identificador, {
+        silent: true,
+        preserveActiveTab: true,
+        ...options
+      })
+        .then(() => {
+          setSyncStatus(true, 'Listo');
+          return true;
+        })
+        .catch((error) => {
+          setSyncStatus(false);
+          throw error;
+        });
     }
 
     function safeText(value, fallback = '—') {
@@ -2409,7 +2601,7 @@
         animatePoints: shouldAnimateIncrease
       });
 
-      if (!silent) {
+      if (!silent || state.bootstrappingFastSession) {
         showApp();
       }
 
@@ -2433,8 +2625,9 @@
         return;
       }
 
-      if (!contacto) {
-        showRegister('Ingresa tu teléfono o correo para crear tu tarjeta.');
+      const contactoValidado = parseContactoGuatemala(contacto);
+      if (!contactoValidado.ok) {
+        showRegister(contactoValidado.message);
         contactoInput.focus();
         return;
       }
@@ -2443,24 +2636,30 @@
       btnCrearCuenta.textContent = 'Creando...';
 
       try {
-        const esCorreo = contacto.includes('@');
+        const esCorreo = contactoValidado.type === 'correo';
+        const contactoNormalizado = contactoValidado.value;
 
-      const data = await apiRequest({
-      action: 'registerClient',
-      nombre,
-      telefono: esCorreo ? '' : contacto,
-      correo: esCorreo ? contacto : ''
-      });
+        const data = await apiRequest({
+          action: 'registerClient',
+          nombre,
+          telefono: esCorreo ? '' : contactoNormalizado,
+          correo: esCorreo ? contactoNormalizado : ''
+        });
+
         if (!data || data.ok === false || !data.cliente) {
           throw new Error(data?.message || 'No se pudo crear la cuenta.');
         }
 
-        state.cliente = data.cliente;
-        state.movimientos = [];
-        saveLocalCliente(state.cliente);
-
-        await cargarClienteDesdeServidor(state.cliente.id_cliente || contacto);
+        const clienteRapido = buildFastRegisterCliente(nombre, contactoNormalizado, data.cliente);
+        hydrateClienteSession({ cliente: clienteRapido, movimientos: [] }, {
+          syncLabel: 'Preparando tu tarjeta...'
+        });
         clearFormInputs();
+
+        backgroundSyncCliente(clienteRapido.id_cliente || contactoNormalizado)
+          .catch((error) => {
+            showRegister(error.message || 'Ocurrió un error al crear la cuenta.');
+          });
       } catch (error) {
         showRegister(error.message || 'Ocurrió un error al crear la cuenta.');
       } finally {
@@ -2471,8 +2670,9 @@
 
     async function ingresarCuenta() {
       const identificador = safeText(loginIdCliente.value, '');
-      if (!identificador) {
-        showLoginFeedback('Ingresa tu teléfono, correo o ID.');
+      const identificadorValidado = parseContactoGuatemala(identificador);
+      if (!identificadorValidado.ok) {
+        showLoginFeedback(identificadorValidado.message);
         loginIdCliente.focus();
         return;
       }
@@ -2480,8 +2680,26 @@
       btnIngresarCuenta.disabled = true;
       btnIngresarCuenta.textContent = 'Ingresando...';
 
+      const identificadorNormalizado = identificadorValidado.value;
+      const snapshot = getBestLocalSnapshotForLogin(identificadorNormalizado);
+
       try {
-        await cargarClienteDesdeServidor(identificador);
+        if (snapshot?.cliente) {
+          closeLoginModal();
+          hydrateClienteSession(snapshot, {
+            syncLabel: 'Actualizando tarjeta...',
+            preserveActiveTab: false
+          });
+
+          backgroundSyncCliente(snapshot.cliente.id_cliente || identificadorNormalizado)
+            .catch((error) => {
+              showLoginFeedback(error.message || 'No se pudo recuperar la cuenta.');
+              showRegister();
+            });
+          return;
+        }
+
+        await cargarClienteDesdeServidor(identificadorNormalizado);
       } catch (error) {
         showLoginFeedback(error.message || 'No se pudo recuperar la cuenta.');
       } finally {
@@ -2549,6 +2767,7 @@
       state.dashboardLoaded = false;
       clearFormInputs();
       state.navInteraction.preferredTabId = 'tabHome';
+      setSyncStatus(false);
       showRegister();
     }
 
@@ -2560,20 +2779,36 @@
 
       if (localCliente?.id_cliente) {
         const sameCachedClient = cached?.cliente?.id_cliente && cached.cliente.id_cliente === localCliente.id_cliente;
+        const snapshot = sameCachedClient
+          ? {
+              cliente: cached.cliente,
+              movimientos: Array.isArray(cached.movimientos) ? cached.movimientos : [],
+              config: cached.config || null
+            }
+          : {
+              cliente: localCliente,
+              movimientos: Array.isArray(cached?.movimientos) ? cached.movimientos : [],
+              config: cached?.config || null
+            };
 
-        if (sameCachedClient) {
-          state.cliente = cached.cliente;
-          state.movimientos = Array.isArray(cached.movimientos) ? cached.movimientos : [];
-          applyDashboardConfig(cached.config || {});
-          renderCliente();
-          showApp();
+        state.bootstrappingFastSession = hydrateClienteSession(snapshot, {
+          syncLabel: 'Actualizando tarjeta...',
+          preserveActiveTab: false
+        });
+
+        if (state.bootstrappingFastSession) {
           state.navInteraction.preferredTabId = 'tabHome';
-          setActiveTab('tabHome', { animate: false });
-
-          cargarClienteDesdeServidor(localCliente.id_cliente, {
-            silent: true,
-            preserveActiveTab: true
-          }).catch(() => {});
+          backgroundSyncCliente(localCliente.id_cliente, {
+            forceDashboard: !sameCachedClient
+          })
+            .catch(() => {
+              clearLocalCliente();
+              clearCache();
+              showRegister();
+            })
+            .finally(() => {
+              state.bootstrappingFastSession = false;
+            });
           return;
         }
 
