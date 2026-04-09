@@ -1562,6 +1562,10 @@
         touchId: null,
         navigating: false,
         cooldownUntil: 0
+      },
+      navInteraction: {
+        suppressClickUntil: 0,
+        lockTabUntil: 0
       }
     };
 
@@ -2351,7 +2355,7 @@
       } = options;
 
       const shouldPreserveTab = preserveActiveTab || !appView.classList.contains('hidden');
-      const activeTabId = shouldPreserveTab ? getActiveTabId() : 'tabHome';
+      const activeTabId = shouldPreserveTab ? state.activeTabId || getActiveTabId() : 'tabHome';
       const previousPoints = state.cliente ? safeNumber(state.cliente.puntos, 0) : null;
       const previousRewardAvailable = String(state.cliente?.premio_disponible || 'NO').toUpperCase() === 'SI';
 
@@ -2398,7 +2402,11 @@
         showApp();
       }
 
-      setActiveTab(shouldPreserveTab ? activeTabId : 'tabHome', { animate: false });
+      if (shouldPreserveTab || Date.now() < state.navInteraction.lockTabUntil) {
+        setActiveTab(activeTabId, { animate: false });
+      } else {
+        setActiveTab('tabHome', { animate: false });
+      }
       startAutoRefresh();
     }
 
@@ -2586,18 +2594,38 @@
       if (event.target === loginModal) closeLoginModal();
     });
 
-    navButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        resetSwipeState();
-        state.swipe.navigating = false;
-        state.swipe.cooldownUntil = Date.now() + 1200;
+    function navigateToTabFromButton(btn) {
+      if (!btn?.dataset?.tab) return;
 
-        const currentIndex = getTabIndex(getActiveTabId());
-        const nextIndex = getTabIndex(btn.dataset.tab);
-        setActiveTab(btn.dataset.tab, {
-          direction: nextIndex < currentIndex ? 'prev' : 'next',
-          animate: true
-        });
+      resetSwipeState();
+      state.swipe.navigating = false;
+      state.swipe.cooldownUntil = Date.now() + 1400;
+      state.navInteraction.lockTabUntil = Date.now() + 1800;
+
+      const currentIndex = getTabIndex(getActiveTabId());
+      const nextIndex = getTabIndex(btn.dataset.tab);
+      setActiveTab(btn.dataset.tab, {
+        direction: nextIndex < currentIndex ? 'prev' : 'next',
+        animate: true
+      });
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse') return;
+        event.preventDefault();
+        event.stopPropagation();
+        state.navInteraction.suppressClickUntil = Date.now() + 800;
+        navigateToTabFromButton(btn);
+      });
+
+      btn.addEventListener('click', (event) => {
+        if (Date.now() < state.navInteraction.suppressClickUntil) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        navigateToTabFromButton(btn);
       });
     });
 
