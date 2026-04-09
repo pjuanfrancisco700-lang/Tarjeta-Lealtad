@@ -2216,7 +2216,7 @@
     }
 
     function shouldIgnoreSwipeStart(target) {
-      return Boolean(target.closest('button, a, input, textarea, select, label, [role="button"], .modal-card'));
+      return Boolean(target.closest('button, a, input, textarea, select, label, [role="button"], .modal-card, .bottom-nav, .nav-btn, [data-tab]'));
     }
 
     function resetSwipeState() {
@@ -2289,13 +2289,14 @@
 
         const touch = getTrackedTouch(event.changedTouches);
         const ignore = state.swipe.ignore;
+        const endedOnIgnoredTarget = shouldIgnoreSwipeStart(event.target);
         const lockedAxis = state.swipe.lockedAxis;
         const startX = state.swipe.startX;
         const startY = state.swipe.startY;
         const startTime = state.swipe.startTime;
         resetSwipeState();
 
-        if (!touch || ignore || lockedAxis !== 'x' || state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
+        if (!touch || ignore || endedOnIgnoredTarget || lockedAxis !== 'x' || state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
 
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
@@ -2587,6 +2588,10 @@
 
     navButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
+        resetSwipeState();
+        state.swipe.navigating = false;
+        state.swipe.cooldownUntil = Date.now() + 1200;
+
         const currentIndex = getTabIndex(getActiveTabId());
         const nextIndex = getTabIndex(btn.dataset.tab);
         setActiveTab(btn.dataset.tab, {
