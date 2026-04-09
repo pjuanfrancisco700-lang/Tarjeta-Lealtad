@@ -971,24 +971,27 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    .modal-card {
-      width: 100%;
-      max-width: var(--maxw);
-      background: rgba(247,245,242,0.96);
-      border: 1px solid rgba(201,184,166,0.52);
-      box-shadow: 0 24px 60px rgba(30,27,24,0.16);
-      border-radius: 28px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-      margin: auto 0;
-      transition: margin-bottom 0.22s ease, transform 0.22s ease;
-    }
+    .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 27, 24, 0.26);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(18px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
+  z-index: 50;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-    .modal-card.keyboard-open {
-      margin-bottom: 0;
-      transform: none;
-    }
+.modal-card.keyboard-open {
+  margin-top: max(12px, env(safe-area-inset-top));
+  margin-bottom: 0;
+  transform: none;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top));
+  overflow-y: auto;
+}
 
     .modal-head {
       display: flex;
