@@ -442,29 +442,6 @@
       filter: drop-shadow(0 1px 0 rgba(110,78,20,0.18));
     }
 
-    .promo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      padding: 10px;
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(201,184,166,0.20), rgba(201,184,166,0.10));
-      border: 1px solid rgba(201,184,166,0.26);
-    }
-
-    .promo strong {
-      display: block;
-      font-size: 14px;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .promo span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
     .qr-card {
       text-align: center;
       padding-top: 12px;
@@ -501,12 +478,10 @@
       position: relative;
       width: 100%;
       min-height: 72px;
-      border-radius: 18px;
+      border-radius: 10px;
       overflow: hidden;
       border: 1px solid rgba(201, 184, 166, 0.34);
-      background:
-        linear-gradient(135deg, rgba(30,27,24,0.10) 0%, rgba(75,58,47,0.06) 34%, rgba(111,125,106,0.12) 100%),
-        linear-gradient(180deg, rgba(247,245,242,0.92) 0%, rgba(237,230,221,0.92) 100%);
+      background: #EDE6DD;
       box-shadow: 0 10px 24px rgba(30, 27, 24, 0.08);
       isolation: isolate;
     }
@@ -515,78 +490,8 @@
       content: '';
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(90deg, rgba(30,27,24,0.18) 0%, rgba(30,27,24,0.06) 28%, rgba(30,27,24,0) 55%),
-        url('banner-promo.jpg') center/cover no-repeat;
+      background: url('banner-promo.jpg') center/cover no-repeat;
       z-index: 0;
-    }
-
-    .qr-banner::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 34%, rgba(30,27,24,0.08) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .qr-banner-fallback {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 14px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .qr-banner-copy {
-      text-align: left;
-      min-width: 0;
-    }
-
-    .qr-banner-copy strong {
-      display: block;
-      font-size: 13px;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: rgba(247,245,242,0.96);
-      text-shadow: 0 1px 2px rgba(30,27,24,0.18);
-    }
-
-    .qr-banner-copy span {
-      display: block;
-      margin-top: 3px;
-      font-size: 11px;
-      line-height: 1.25;
-      color: rgba(247,245,242,0.82);
-      text-shadow: 0 1px 2px rgba(30,27,24,0.14);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .qr-banner-badge {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 34px;
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      background: rgba(247,245,242,0.20);
-      border: 1px solid rgba(247,245,242,0.18);
-      color: rgba(247,245,242,0.94);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 6px 18px rgba(30,27,24,0.12);
     }
 
     .muted {
@@ -1257,28 +1162,13 @@
               <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
             </div>
             <div class="cups" id="cupsGrid"></div>
-            <div class="promo">
-              <div>
-                <strong id="promoTitle">Promoción base</strong>
-                <span id="promoSubtitle">Acumula 10 puntos y gana un café gratis.</span>
-              </div>
-              <div style="font-size:22px; color:var(--text); opacity:.9;">✦</div>
-            </div>
             <div class="progress-qr-block">
               <p class="eyebrow progress-qr-label">Tu QR personal</p>
               <div class="qr-box">
                 <img id="qrImage" alt="QR del cliente" loading="lazy" decoding="async" fetchpriority="low" />
               </div>
               <div class="qr-banner-wrap" aria-label="Banner promocional">
-                <div class="qr-banner" role="img" aria-label="Banner promocional de Coffee Bike">
-                  <div class="qr-banner-fallback" aria-hidden="true">
-                    <div class="qr-banner-copy">
-                      <strong>Espacio promocional</strong>
-                      <span>Reemplaza banner-promo.jpg en tu repositorio</span>
-                    </div>
-                    <div class="qr-banner-badge">Promo</div>
-                  </div>
-                </div>
+                <div class="qr-banner" role="img" aria-label="Banner promocional de Coffee Bike"></div>
               </div>
             </div>
             <div id="pointsFeedback" class="points-feedback" aria-live="polite" aria-atomic="true">
@@ -2013,10 +1903,14 @@
           ? 'Ya casi: tu recompensa está lista para activarse.'
           : `Te faltan ${faltan} punto${faltan === 1 ? '' : 's'} para tu premio.`;
 
-      ui.promoTitle.textContent = premioDisponible ? 'Premio disponible' : 'Promoción base';
-      ui.promoSubtitle.textContent = premioDisponible
-        ? `Tienes un ${state.recompensa} listo para canjear.`
-        : `Acumula ${meta} puntos y gana un ${state.recompensa}.`;
+      if (ui.promoTitle) {
+        ui.promoTitle.textContent = premioDisponible ? 'Premio disponible' : 'Promoción base';
+      }
+      if (ui.promoSubtitle) {
+        ui.promoSubtitle.textContent = premioDisponible
+          ? `Tienes un ${state.recompensa} listo para canjear.`
+          : `Acumula ${meta} puntos y gana un ${state.recompensa}.`;
+      }
 
       ui.perfilPremio.textContent = premioDisponible
         ? `Tienes un ${state.recompensa} disponible.`
@@ -2521,3 +2415,4 @@
   </script>
 </body>
 </html>
+
