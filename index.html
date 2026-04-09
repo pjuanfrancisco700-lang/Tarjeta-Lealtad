@@ -1565,7 +1565,8 @@
       },
       navInteraction: {
         suppressClickUntil: 0,
-        lockTabUntil: 0
+        lockTabUntil: 0,
+        preferredTabId: 'tabHome'
       }
     };
 
@@ -2213,7 +2214,11 @@
       const targetIndex = currentIndex + offset;
       if (targetIndex < 0 || targetIndex >= orderedTabs.length) return;
 
-      setActiveTab(orderedTabs[targetIndex], {
+      const targetTabId = orderedTabs[targetIndex];
+      state.navInteraction.preferredTabId = targetTabId;
+      state.navInteraction.lockTabUntil = Date.now() + 900;
+
+      setActiveTab(targetTabId, {
         direction: offset > 0 ? 'next' : 'prev',
         animate: true
       });
@@ -2402,11 +2407,13 @@
         showApp();
       }
 
-      if (shouldPreserveTab || Date.now() < state.navInteraction.lockTabUntil) {
-        setActiveTab(activeTabId, { animate: false });
-      } else {
-        setActiveTab('tabHome', { animate: false });
-      }
+      const hasLockedPreferredTab = Date.now() < state.navInteraction.lockTabUntil && state.navInteraction.preferredTabId && tabPanels.some((panel) => panel.id === state.navInteraction.preferredTabId);
+      const liveTabId = getActiveTabId();
+      const tabToRestore = hasLockedPreferredTab
+        ? state.navInteraction.preferredTabId
+        : (shouldPreserveTab ? (liveTabId || state.activeTabId || activeTabId) : 'tabHome');
+
+      setActiveTab(tabToRestore, { animate: false });
       startAutoRefresh();
     }
 
@@ -2535,6 +2542,7 @@
       ui.qrImage.removeAttribute('src');
       state.dashboardLoaded = false;
       clearFormInputs();
+      state.navInteraction.preferredTabId = 'tabHome';
       showRegister();
     }
 
@@ -2553,6 +2561,7 @@
           applyDashboardConfig(cached.config || {});
           renderCliente();
           showApp();
+          state.navInteraction.preferredTabId = 'tabHome';
           setActiveTab('tabHome', { animate: false });
 
           cargarClienteDesdeServidor(localCliente.id_cliente, {
@@ -2601,6 +2610,7 @@
       state.swipe.navigating = false;
       state.swipe.cooldownUntil = Date.now() + 1400;
       state.navInteraction.lockTabUntil = Date.now() + 1800;
+      state.navInteraction.preferredTabId = btn.dataset.tab;
 
       const currentIndex = getTabIndex(getActiveTabId());
       const nextIndex = getTabIndex(btn.dataset.tab);
