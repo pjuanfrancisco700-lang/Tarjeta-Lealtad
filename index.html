@@ -998,31 +998,35 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      padding: 0 12px env(safe-area-inset-bottom);
+      padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
       z-index: 50;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
+    .modal-overlay.keyboard-open {
+      align-items: flex-end;
+      padding: 0 12px env(safe-area-inset-bottom);
+    }
+
     .modal-card {
-  width: min(100%, 400px);
-  margin: 0;
-  padding: 16px 16px 14px;
-  border-radius: 26px 26px 0 0;
-  background: rgba(247, 245, 242, 0.96);
-  border: 1px solid rgba(201, 184, 166, 0.42);
-  box-shadow:
-    0 20px 44px rgba(30, 27, 24, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  display: grid;
-  gap: 10px;
-  transition: transform 0.25s ease;
-  align-self: flex-end;
-}
+      width: min(100%, 400px);
+      margin: 0;
+      padding: 16px 16px 14px;
+      border-radius: 26px;
+      background: rgba(247, 245, 242, 0.96);
+      border: 1px solid rgba(201, 184, 166, 0.42);
+      box-shadow:
+        0 20px 44px rgba(30, 27, 24, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: grid;
+      gap: 10px;
+      transition: transform 0.25s ease;
+    }
 
     .modal-card.keyboard-open {
       margin-top: 0;
@@ -1845,9 +1849,11 @@
 
     function openLoginModal() {
       loginModal.classList.remove('hidden');
+      loginModal.classList.remove('keyboard-open');
       loginFeedback.textContent = '';
       loginFeedback.className = 'feedback error hidden';
       loginIdCliente.value = '';
+      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
 
       setTimeout(() => {
         loginIdCliente.focus({ preventScroll: true });
@@ -1857,6 +1863,7 @@
 
     function closeLoginModal() {
       loginModal.classList.add('hidden');
+      loginModal.classList.remove('keyboard-open');
       loginFeedback.textContent = '';
       loginFeedback.className = 'feedback error hidden';
       loginIdCliente.value = '';
@@ -2975,11 +2982,13 @@
     });
 
     loginIdCliente.addEventListener('focus', () => {
+      loginModal.classList.add('keyboard-open');
       loginModal.querySelector('.modal-card')?.classList.add('keyboard-open');
       ensureLoginInputVisible();
     });
 
     loginIdCliente.addEventListener('blur', () => {
+      loginModal.classList.remove('keyboard-open');
       loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
     });
 
