@@ -1,46 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-180.png">
-  <meta name="theme-color" content="#1E1B18">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Tarjeta de Lealtad</title>
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Coffee Bike">
-<meta property="og:description" content="Tu tarjeta digital de lealtad. Acumula puntos y gana cafés gratis.">
-<meta property="og:url" content="https://coffeebikeapp.online/">
-<meta property="og:image" content="https://coffeebikeapp.online/preview-coffee-bike-v2.png">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#eef2f7" />
+  <meta name="color-scheme" content="light" />
+  <title>Validar puntos</title>
   <style>
-
-        :root {
-      --bg: #EDE6DD;
-      --bg-soft: #F7F5F2;
-      --surface: #F7F5F2;
-      --surface-soft: #EFE7DE;
-      --card: rgba(247, 245, 242, 0.94);
-      --text: #1E1B18;
-      --muted: #4B3A2F;
-      --line: rgba(111, 125, 106, 0.14);
-      --line-strong: rgba(75, 58, 47, 0.16);
-      --accent: #6F7D6A;
-      --accent-strong: #5E6B59;
-      --accent-soft: rgba(111, 125, 106, 0.12);
-      --warm: #4B3A2F;
-      --warm-soft: rgba(75, 58, 47, 0.12);
-      --gold: #C9B8A6;
-      --gold-strong: #CFAF5E;
-      --gold-deep: #9E7B2F;
-      --gold-soft: #F5E7B8;
-      --beige: #C9B8A6;
-      --success: #6F7D6A;
-      --danger: #7A5449;
-      --shadow: 0 12px 32px rgba(30, 27, 24, 0.10);
-      --shadow-soft: 0 8px 22px rgba(30, 27, 24, 0.06);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 18px;
+    :root {
+      --bg: #eef2f7;
+      --bg-2: #f8fafc;
+      --card: rgba(255, 255, 255, 0.88);
+      --panel: rgba(255, 255, 255, 0.74);
+      --panel-solid: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(148, 163, 184, 0.18);
+      --line-strong: rgba(148, 163, 184, 0.24);
+      --accent: #111827;
+      --accent-soft: #f1f5f9;
+      --success: #166534;
+      --danger: #b91c1c;
+      --shadow-phone: 0 24px 60px rgba(15, 23, 42, 0.16);
+      --shadow-card: 0 12px 30px rgba(15, 23, 42, 0.07);
+      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.05);
+      --radius-2xl: 30px;
+      --radius-xl: 24px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
       --maxw: 430px;
     }
 
@@ -50,2978 +40,923 @@
     }
 
     html {
+      margin: 0;
+      padding: 0;
       width: 100%;
-      overflow-x: hidden;
+      height: 100%;
+      overflow: hidden;
+      color-scheme: light;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
       touch-action: manipulation;
+      overscroll-behavior: none;
       -webkit-text-size-adjust: 100%;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      min-height: 100dvh;
-      overflow-x: hidden;
-      background:
-        radial-gradient(circle at top center, rgba(201,184,166,0.16) 0%, rgba(201,184,166,0) 26%),
-        linear-gradient(180deg, #F2ECE4 0%, #EDE6DD 100%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
     body {
+      margin: 0;
+      padding: 10px;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
       display: flex;
       justify-content: center;
-      padding: max(12px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
+      align-items: stretch;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: transparent;
+      overscroll-behavior: none;
+      touch-action: manipulation;
     }
 
-    .app-shell {
+    .shell {
       width: 100%;
       max-width: var(--maxw);
-      min-height: 100%;
+      height: 100%;
     }
 
     .phone {
-      width: 100%;
-      min-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - max(18px, env(safe-area-inset-bottom)) - 24px);
-      border-radius: 36px;
-      background:
-        linear-gradient(180deg, rgba(247,245,242,0.98) 0%, rgba(237,230,221,0.98) 100%);
-      border: 1px solid rgba(201, 184, 166, 0.62);
-      box-shadow: 0 24px 70px rgba(30, 27, 24, 0.12);
-      overflow: hidden;
       position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-phone);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
     .phone::before {
-      content: '';
+      content: "";
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 178px;
-      background:
-        linear-gradient(180deg, rgba(30,27,24,0.42) 0%, rgba(30,27,24,0.42) 100%),
-        url('header-bg.jpg') center/cover no-repeat;
-      opacity: 0.98;
+      inset: 0;
       pointer-events: none;
-      z-index: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.08));
+      opacity: 0.9;
     }
 
-    .status-space {
-      height: 10px;
+    .screen,
+    .loading {
       position: relative;
       z-index: 1;
+      min-height: 100%;
+      height: 100%;
     }
 
     .screen {
-      position: relative;
-      min-height: 100%;
-      padding: 10px;
-      padding-bottom: calc(60px + env(safe-area-inset-bottom));
-      touch-action: pan-y;
-      z-index: 1;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      overflow: hidden;
     }
 
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2px;
-      position: relative;
-      z-index: 1;
+      gap: 10px;
+      padding: 4px 2px 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 9px;
-      color: #F7F5F2;
-    }
-
-    .brand > div:last-child {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.11em;
-      line-height: 1;
-      text-transform: uppercase;
-      opacity: 0.84;
-      color: rgba(247, 245, 242, 0.92);
-      white-space: nowrap;
-      transition: opacity 0.22s ease, color 0.22s ease;
-    }
-
-    .brand-badge,
-    .icon-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      background: rgba(247,245,242,0.16);
-      border: 1px solid rgba(247,245,242,0.22);
-      box-shadow: 0 10px 26px rgba(30,27,24,0.10);
-      color: #F7F5F2;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .brand-badge {
-  width: 64px;
-  height: 64px;
-  aspect-ratio: 1;
-  border-radius: 22px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  isolation: isolate;
-  background: rgba(247,245,242,0.14);
-  border: 1px solid rgba(247,245,242,0.15);
-  box-shadow: 0 8px 20px rgba(30,27,24,0.16);
-  flex-shrink: 0;
-}
-
-    .brand-badge::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url('logo-badge.png');
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      transform: scale(1.05);
-      transform-origin: center;
-      z-index: 0;
-    }
-
-    .icon-btn {
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(201, 184, 166, 0.42);
-      box-shadow: var(--shadow);
-      border-radius: var(--radius-xl);
-      padding: 14px;
-      position: relative;
-    }
-
-    .hero {
-      margin-top: 0;
-      background:
-        linear-gradient(180deg, rgba(247,245,242,0.12) 0 0),
-        linear-gradient(180deg, rgba(247,245,242,0.22), rgba(247,245,242,0.06));
-      border: 1px solid rgba(247,245,242,0.14);
-      box-shadow: none;
-      color: #F7F5F2;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 10px 14px 12px;
-    }
-
-    .eyebrow {
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin: 0 0 8px;
-      font-weight: 700;
-    }
-
-    .hero .eyebrow {
-      color: rgba(247,245,242,0.78);
-    }
-
-    .hero h1,
-    .register-title {
-      margin: 0;
-      font-size: 31px;
-      line-height: 1.02;
-      letter-spacing: -0.05em;
-      font-weight: 900;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif;
-    }
-
-    .hero h1 {
-      color: #F7F5F2;
-      font-size: 26px;
-      line-height: 1.05;
-    }
-
-    .hero p,
-    .register-sub {
-      color: var(--muted);
-      margin: 6px 0 0;
-      line-height: 1.42;
-      font-size: 13px;
-    }
-
-    .hero p {
-      color: rgba(247,245,242,0.82);
-      margin-top: 4px;
-      font-size: 12px;
-    }
-
-    .headline-highlight {
-      color: inherit;
-      background: none;
-      -webkit-text-fill-color: currentColor;
-      letter-spacing: -0.03em;
-    }
-
-    .stack {
-      display: grid;
-      gap: 9px;
-    }
-
-    .mt-18 { margin-top: 16px; }
-    .mt-20 { margin-top: 18px; }
-
-    .progress-wrap {
-      display: grid;
       gap: 10px;
-      position: relative;
-      overflow: hidden;
-      transition: box-shadow 0.28s ease, transform 0.28s ease, border-color 0.28s ease;
-    }
-
-    .progress-qr-block {
-      display: grid;
-      gap: 10px;
-      padding-top: 2px;
-    }
-
-    .progress-qr-label {
-      margin: 0;
-      text-align: center;
-    }
-
-    .progress-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .progress-head h2 {
-      margin: 0;
-      font-size: 16px;
-      letter-spacing: -0.04em;
-    }
-
-    .big-points {
-      font-size: 15px;
-      color: var(--muted);
-    }
-
-    .big-points strong {
-      color: var(--accent);
-      font-size: 22px;
-      letter-spacing: -0.06em;
-    }
-
-    .cups {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      align-content: center;
-      gap: 9px;
-      row-gap: 10px;
-      flex-wrap: wrap;
-      width: 100%;
-      margin: 0 auto;
-      padding-top: 2px;
-    }
-
-    .cup {
-      width: 46px;
-      height: 46px;
-      aspect-ratio: 1;
-      flex: 0 0 46px;
-      padding: 4px;
-      border-radius: 16px;
-      background: #E6DDD2;
-      border: 1px solid rgba(111,125,106,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 1px 0 rgba(247,245,242,0.82);
-      opacity: 0.42;
-      transform: translateY(0) scale(1);
-      transition:
-        opacity 0.24s ease,
-        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 0.3s ease,
-        border-color 0.3s ease,
-        background 0.3s ease;
-    }
-
-    .cup::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(180deg, rgba(247,245,242,0.34), rgba(247,245,242,0));
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .cup::after {
-      display: none;
-    }
-
-    .cup svg {
-      width: 66%;
-      height: 66%;
-      min-width: 27px;
-      min-height: 27px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      color: rgba(111,125,106,0.56);
-      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.28s ease, opacity 0.28s ease;
-      opacity: 0.95;
-      position: relative;
-      z-index: 1;
-      display: block;
-      flex-shrink: 0;
-      transform-origin: center;
-    }
-
-    .cup.filled {
-      background: linear-gradient(180deg, #F7F5F2 0%, #EFE7DE 100%);
-      color: var(--accent);
-      border-color: rgba(111,125,106,0.22);
-      opacity: 1;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(111,125,106,0.12);
-    }
-
-    .cup.filled svg {
-      color: var(--warm);
-      opacity: 1;
-      transform: scale(1.04);
-      filter: drop-shadow(0 0 6px rgba(75,58,47,0.18));
-    }
-
-    .cup.goal-cup {
-      border-color: rgba(75,58,47,0.14);
-      background: #F1E8DE;
-      box-shadow: inset 0 1px 0 rgba(247,245,242,0.88);
-      opacity: 0.62;
-    }
-
-    .cup.goal-cup svg {
-      color: rgba(75,58,47,0.68);
-    }
-
-    .cup.goal-cup.filled {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.08) 42%, rgba(255,255,255,0) 100%),
-        linear-gradient(145deg, var(--gold-soft) 0%, #E2C87A 34%, var(--gold-strong) 64%, var(--gold-deep) 100%);
-      border-color: rgba(158,123,47,0.34);
-      box-shadow:
-        0 12px 24px rgba(158,123,47,0.18),
-        0 0 0 1px rgba(255,244,214,0.22),
-        inset 0 1px 0 rgba(255,255,255,0.44);
-      opacity: 1;
-      transform: translateY(-2px) scale(1.02);
-    }
-
-    .cup.goal-cup.filled::before {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.12) 42%, rgba(255,255,255,0) 100%),
-        linear-gradient(135deg, rgba(255,248,225,0.34) 0%, rgba(255,248,225,0) 58%);
-      opacity: 1;
-    }
-
-    .cup.goal-cup.filled svg {
-      color: #FFF6DD;
-      opacity: 1;
-      transform: scale(1.08);
-      filter: drop-shadow(0 1px 0 rgba(110,78,20,0.18));
-    }
-
-    .promo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      padding: 10px;
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(201,184,166,0.20), rgba(201,184,166,0.10));
-      border: 1px solid rgba(201,184,166,0.26);
-    }
-
-    .promo strong {
-      display: block;
-      font-size: 14px;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .promo span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .qr-card {
-      text-align: center;
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-
-    .qr-box {
-      width: min(100%, 164px);
-      aspect-ratio: 1;
-      margin: 0 auto 10px;
-      background: #F7F5F2;
-      border-radius: 24px;
-      padding: 14px;
-      border: 1px solid rgba(216,213,196,0.55);
-      box-shadow: 0 12px 24px rgba(30, 27, 24, 0.08);
-      display: grid;
-      place-items: center;
-    }
-
-    .qr-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 14px;
-    }
-
-    .qr-banner-wrap {
-      margin-top: 0;
-      display: flex;
-      justify-content: center;
-    }
-
-    .qr-banner {
-      position: relative;
-      width: 100%;
-      min-height: 58px;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid rgba(201, 184, 166, 0.38);
-      background:
-        linear-gradient(135deg, rgba(30,27,24,0.12) 0%, rgba(75,58,47,0.08) 34%, rgba(111,125,106,0.12) 100%),
-        linear-gradient(180deg, rgba(247,245,242,0.92) 0%, rgba(237,230,221,0.92) 100%);
-      box-shadow: 0 10px 22px rgba(30, 27, 24, 0.10);
-      isolation: isolate;
-    }
-
-    .qr-banner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, rgba(30,27,24,0.18) 0%, rgba(30,27,24,0.06) 28%, rgba(30,27,24,0) 55%),
-        url('banner-promo.jpg') center/cover no-repeat;
-      z-index: 0;
-    }
-
-    .qr-banner::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 34%, rgba(30,27,24,0.08) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .qr-banner-fallback {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 9px 12px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .qr-banner-copy {
-      text-align: left;
       min-width: 0;
     }
 
-    .qr-banner-copy strong {
-      display: block;
-      font-size: 13px;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: rgba(247,245,242,0.96);
-      text-shadow: 0 1px 2px rgba(30,27,24,0.18);
+    .brand-badge {
+      display: none;
     }
 
-    .qr-banner-copy span {
-      display: block;
-      margin-top: 3px;
-      font-size: 11px;
-      line-height: 1.25;
-      color: rgba(247,245,242,0.82);
-      text-shadow: 0 1px 2px rgba(30,27,24,0.14);
+    .brand div:last-child {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.01em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .qr-banner-badge {
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 15px;
       flex-shrink: 0;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-xl);
+      padding: 15px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .hero,
+    .card:nth-of-type(2),
+    .card:nth-of-type(3) {
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    .hero {
+      padding-bottom: 13px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.82)),
+        linear-gradient(135deg, rgba(241,245,249,0.75), rgba(255,255,255,0.15));
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 10px;
+      margin: 0 0 8px;
+      font-weight: 800;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .hero h1 {
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 6px;
+      color: #0b1220;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.38;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .tiny-pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 34px;
-      height: 34px;
-      padding: 0 12px;
+      min-height: 29px;
+      padding: 6px 11px;
       border-radius: 999px;
-      background: rgba(247,245,242,0.20);
-      border: 1px solid rgba(247,245,242,0.18);
-      color: rgba(247,245,242,0.94);
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 6px 18px rgba(30,27,24,0.12);
+      color: #475569;
+      background: rgba(248, 250, 252, 0.95);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
     }
 
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .section-title {
+    .progress-head {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
-      gap: 9px;
+      gap: 12px;
+    }
+
+    .progress-head h2 {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-weight: 800;
       margin-bottom: 6px;
     }
 
-    .section-title h3 {
-      margin: 0;
-      font-size: 19px;
-      letter-spacing: -0.04em;
-    }
-
-    .mini-link {
-      background: transparent;
-      border: none;
-      color: var(--accent);
+    .big-points {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 18px;
       font-weight: 700;
-      cursor: pointer;
-      padding: 0;
-      font-size: 13px;
     }
 
-    .row-card {
+    .big-points strong {
+      color: var(--text);
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    #faltanText {
+      margin-top: 0 !important;
+      color: var(--muted) !important;
+      font-size: 13px !important;
+      line-height: 1.35;
+    }
+
+    .cups {
+      display: none !important;
+    }
+
+    .cup,
+    .cup.filled {
+      display: none !important;
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 0;
+    }
+
+    .info-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 9px;
+      gap: 12px;
       padding: 11px 0;
-      border-top: 1px solid rgba(111,125,106,0.10);
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
     }
 
-    .row-card:first-of-type {
+    .info-row:first-child {
       border-top: none;
       padding-top: 0;
     }
 
-    .row-card:last-of-type {
+    .info-row:last-child {
       padding-bottom: 0;
     }
 
-    .row-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .row-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      background: var(--surface-soft);
-      border: 1px solid rgba(111,125,106,0.10);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .row-icon svg {
-      width: 18px;
-      height: 18px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      color: var(--accent);
-    }
-
-    .row-card strong,
-    .row-card p {
-      margin: 0;
-    }
-
-    .row-card p {
+    .info-label {
       color: var(--muted);
-      font-size: 13px;
-      margin-top: 3px;
+      font-size: 12px;
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 12px;
-      border-radius: 999px;
+    .info-value {
+      font-weight: 700;
+      text-align: right;
+      font-size: 13px;
+      max-width: 58%;
+      word-break: break-word;
+      color: #0f172a;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-top: 13px;
+    }
+
+    .field label {
       font-size: 12px;
       font-weight: 700;
-      background: var(--accent-soft);
-      color: var(--accent);
-      white-space: nowrap;
+      color: var(--muted);
+      letter-spacing: 0.01em;
     }
 
+    .pin-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid rgba(203, 213, 225, 0.95);
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 15px;
+      padding: 12px 13px;
+      font-size: 15px;
+      outline: none;
+      color: var(--text);
+      min-height: 44px;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    #pinInput {
+      letter-spacing: 0.18em;
+    }
+
+    .field input:focus {
+      border-color: rgba(148, 163, 184, 0.75);
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.13);
+      background: #fff;
+    }
+
+    .ghost-btn,
     .primary-btn,
     .secondary-btn {
       width: 100%;
-      border-radius: 18px;
-      padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    }
-
-    .primary-btn {
       border: none;
-      background: linear-gradient(180deg, #5E6B59 0%, #6F7D6A 100%);
-      color: #F7F5F2;
-      box-shadow: 0 14px 26px rgba(111,125,106,0.22);
+      border-radius: 15px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, opacity 0.18s ease;
+      min-height: 44px;
     }
 
     .secondary-btn {
-      background: #F7F5F2;
+      background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.16);
+    }
+
+    .primary-btn {
+      background: rgba(248, 250, 252, 0.95);
       color: var(--text);
-      border: 1px solid rgba(201,184,166,0.58);
+      border: 1px solid rgba(226, 232, 240, 0.95);
       box-shadow: var(--shadow-soft);
     }
 
+    .ghost-btn {
+      width: auto;
+      min-width: 70px;
+      background: rgba(248, 250, 252, 0.96);
+      color: var(--text);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      padding-inline: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .ghost-btn:active,
     .primary-btn:active,
     .secondary-btn:active,
     .icon-btn:active {
       transform: scale(0.985);
     }
 
-    .phone.syncing::after {
-      content: attr(data-sync-label);
-      position: absolute;
-      top: calc(14px + env(safe-area-inset-top));
-      right: 14px;
-      z-index: 12;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(247,245,242,0.84);
-      border: 1px solid rgba(201,184,166,0.44);
-      box-shadow: 0 10px 22px rgba(30,27,24,0.08);
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      pointer-events: none;
-      animation: syncBadgeFadeIn 0.18s ease;
-    }
-
-    @keyframes syncBadgeFadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .register {
-      min-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - max(18px, env(safe-area-inset-bottom)) - 24px);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      gap: 10px;
-      padding: calc(24px + env(safe-area-inset-top)) 14px 16px;
-      background:
-        radial-gradient(circle at top left, rgba(201,184,166,0.20) 0%, rgba(201,184,166,0) 28%),
-        linear-gradient(180deg, #EEE7DE 0%, #E7DED4 100%);
-      position: relative;
-      z-index: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .register-hero {
-  text-align: left;
-  padding: 8px 6px 0;
-  color: var(--text);
-  position: relative;
-  z-index: 1;
-}
-
-.register-hero .brand {
-  margin-bottom: 10px;
-}
-
-.register-brand-subtitle {
-  display: none;
-}
-
-    .register .brand {
-      color: var(--accent);
-    }
-
-    .register .brand > div:last-child {
-      color: rgba(75, 58, 47, 0.88);
-      opacity: 0.88;
-    }
-
-    .register .brand-badge {
-      background: rgba(111,125,106,0.10);
-      border: 1px solid rgba(111,125,106,0.12);
-      color: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-    }
-
-    .register-card {
-      background: rgba(247,245,242,0.88);
-      border: 1px solid rgba(201,184,166,0.46);
-      box-shadow: var(--shadow);
-      border-radius: 30px;
-      padding: 16px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-
-    .field label {
+    .status-box {
+      border-radius: 15px;
+      padding: 11px 12px;
       font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
+      line-height: 1.35;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow-soft);
     }
 
-    .field input {
-      width: 100%;
-      border: 1px solid rgba(216,213,196,0.88);
-      background: #F7F5F2;
-      border-radius: 18px;
-      padding: 13px 15px;
-      font-size: 15px;
-      outline: none;
+    .status-box.info {
+      background: rgba(248, 250, 252, 0.96);
       color: var(--text);
-      box-shadow: inset 0 1px 0 rgba(247,245,242,0.78);
+      border-color: rgba(226, 232, 240, 0.95);
     }
 
-    .field input:focus {
-      border-color: rgba(111,125,106,0.24);
-      box-shadow: 0 0 0 4px rgba(111,125,106,0.10);
-    }
-
-    .register-note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.42;
-      margin-top: 0;
-    }
-
-    .feedback {
-      padding: 13px 15px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .feedback.error {
-      background: rgba(192, 94, 81, 0.10);
-      color: var(--danger);
-      border: 1px solid rgba(192, 94, 81, 0.14);
-    }
-
-    .feedback.ok {
-      background: rgba(111,125,106,0.12);
+    .status-box.ok {
+      background: #f0fdf4;
       color: var(--success);
-      border: 1px solid rgba(111,125,106,0.14);
+      border-color: #bbf7d0;
     }
 
-    .bottom-nav {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: calc(32px + env(safe-area-inset-bottom));
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 8px 0 2px;
-      z-index: 10;
-      pointer-events: none;
+    .status-box.error {
+      background: #fef2f2;
+      color: var(--danger);
+      border-color: #fecaca;
     }
 
-    .nav-btn {
-      width: 10px;
-      height: 10px;
-      padding: 0;
-      border: none;
-      border-radius: 999px;
-      background: rgba(111,125,106,0.22);
-      cursor: pointer;
-      transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease, width 0.2s ease;
-      opacity: 0.95;
-      pointer-events: auto;
+    .status-hidden { display: none; }
+    .hidden { display: none !important; }
+
+    .split-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px !important;
     }
 
-    .nav-btn span,
-    .nav-btn svg {
+    .center-note {
       display: none;
     }
 
-    .nav-btn.active {
-      width: 24px;
-      background: var(--accent);
-      transform: none;
-      opacity: 1;
-      box-shadow: 0 6px 14px rgba(75,58,47,0.20);
+    .loading {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      background: transparent;
     }
 
-    .small-meta {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+    .loading strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: -0.04em;
+    }
+
+    .loading p {
       margin-top: 8px;
-    }
-
-    .tiny-pill {
-      padding: 8px 11px;
-      border-radius: 999px;
-      font-size: 11px;
-      color: var(--accent);
-      background: rgba(247,245,242,0.68);
-      border: 1px solid rgba(247,245,242,0.22);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .center-note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 10px;
-      line-height: 1.42;
-    }
-
-    .tab-panel {
-      animation-duration: 0.24s;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-      animation-fill-mode: both;
-      will-change: transform, opacity;
-    }
-
-    .tab-panel.tab-enter-next {
-      animation-name: tabSlideInNext;
-    }
-
-    .tab-panel.tab-enter-prev {
-      animation-name: tabSlideInPrev;
-    }
-
-    @keyframes tabSlideInNext {
-      from {
-        opacity: 0;
-        transform: translate3d(24px, 0, 0);
-      }
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-      }
-    }
-
-    @keyframes tabSlideInPrev {
-      from {
-        opacity: 0;
-        transform: translate3d(-24px, 0, 0);
-      }
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-      }
-    }
-
-    .register-actions,
-    .modal-actions {
-      display: grid;
-      gap: 9px;
-    }
-
-    .divider-text {
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-      margin: 2px 0;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(30, 27, 24, 0.24);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
-      z-index: 50;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .modal-card {
-      width: min(100%, 400px);
-      margin: auto 0;
-      padding: 16px 16px 14px;
-      border-radius: 26px;
-      background: rgba(247, 245, 242, 0.96);
-      border: 1px solid rgba(201, 184, 166, 0.42);
-      box-shadow:
-        0 20px 44px rgba(30, 27, 24, 0.16),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: grid;
-      gap: 10px;
-    }
-
-    .modal-card.keyboard-open {
-      margin-top: max(10px, env(safe-area-inset-top));
-      margin-bottom: 0;
-      transform: none;
-      max-height: calc(100dvh - 16px - env(safe-area-inset-top));
-      overflow-y: auto;
-      padding-top: 14px;
-      padding-bottom: 12px;
-      gap: 8px;
-    }
-
-    .modal-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 0;
-    }
-
-    .modal-head > div {
-      min-width: 0;
-    }
-
-    .modal-head .eyebrow {
-      margin: 0 0 4px !important;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      opacity: 0.78;
-    }
-
-    .modal-head h3 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.02;
-      letter-spacing: -0.05em;
-    }
-
-    .modal-head p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.35;
     }
 
-    .modal-close {
-      width: 38px;
-      height: 38px;
-      border-radius: 14px;
-      border: 1px solid rgba(201, 184, 166, 0.58);
-      background: rgba(247, 245, 242, 0.92);
-      color: var(--text);
-      font-size: 17px;
-      cursor: pointer;
-      flex-shrink: 0;
-      box-shadow: 0 6px 16px rgba(30, 27, 24, 0.06);
+
+    /* BOTÓN CANJEAR ACTIVO (premio disponible) */
+    .btn-reward {
+      background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 18px rgba(22, 163, 74, 0.28) !important;
+      animation: pulseReward 1.6s ease-in-out infinite;
     }
 
-    .modal-card .field {
-      display: grid;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .modal-card .field label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .modal-card .field input {
-      width: 100%;
-      min-height: 56px;
-      border: 1px solid rgba(216, 213, 196, 0.92);
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 18px;
-      padding: 16px 16px;
-      font-size: 16px;
-      outline: none;
-      color: var(--text);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.78),
-        0 6px 18px rgba(30, 27, 24, 0.04);
-    }
-
-    .modal-card .field input:focus {
-      border-color: rgba(111, 125, 106, 0.26);
-      box-shadow:
-        0 0 0 4px rgba(111, 125, 106, 0.10),
-        0 10px 24px rgba(30, 27, 24, 0.06);
-    }
-
-    .modal-card #loginFeedback {
-      margin-top: 0;
-    }
-
-    .modal-actions {
-      display: grid;
-      gap: 8px;
-      margin-top: 2px;
-    }
-
-    .modal-actions .primary-btn,
-    .modal-actions .secondary-btn {
-      min-height: 52px;
-      border-radius: 18px;
-      padding-top: 14px;
-      padding-bottom: 14px;
-    }
-
-    .modal-actions .primary-btn {
-      box-shadow: 0 14px 26px rgba(111, 125, 106, 0.18);
-    }
-
-    .center-note {
-      margin-top: 0 !important;
-      font-size: 11px;
-      line-height: 1.35;
-      color: var(--muted);
-      opacity: 0.9;
-    }
-
-    @media (max-height: 760px) {
-      .modal-card.keyboard-open {
-        padding-top: 12px;
-        padding-bottom: 10px;
-        gap: 7px;
-      }
-
-      .modal-head h3 {
-        font-size: 22px;
-      }
-
-      .modal-head p {
-        font-size: 11px;
-        line-height: 1.28;
-      }
-
-      .modal-card .field input {
-        min-height: 52px;
-        padding: 14px 15px;
-      }
-
-      .modal-actions .primary-btn,
-      .modal-actions .secondary-btn {
-        min-height: 50px;
-      }
-
-      .center-note {
-        display: none;
-      }
-    }
-
-    .progress-wrap::after {
-      content: '';
-      position: absolute;
-      inset: -35%;
-      background: radial-gradient(circle, rgba(111,125,106,0.18) 0%, rgba(201,184,166,0) 58%);
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.88);
-    }
-
-    .progress-wrap.update-glow {
-      border-color: rgba(111,125,106,0.20);
-      box-shadow: 0 16px 38px rgba(30,27,24,0.10);
-    }
-
-    .progress-wrap.update-glow::after {
-      animation: cardFlash 1s ease;
-    }
-
-    .big-points strong.points-bump {
-      display: inline-block;
-      animation: pointsBump 0.45s ease;
-    }
-
-    .cup.fill-pop {
-      animation: cupFillPop 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
-      animation-delay: var(--fill-delay, 0ms);
-    }
-
-    .points-feedback {
-      position: absolute;
-      left: 12px;
-      right: 12px;
-      top: 132px;
-      bottom: auto;
-      display: flex;
-      justify-content: center;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      z-index: 2;
-    }
-
-    .points-feedback.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .points-feedback span {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 34px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(75,58,47,0.94);
-      color: #F7F5F2;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      box-shadow: 0 12px 22px rgba(111,125,106,0.16);
-    }
-
-    @keyframes pointsBump {
-      0% { transform: scale(1); opacity: 0.9; }
-      40% { transform: scale(1.16); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes cardFlash {
-      0% { opacity: 0; transform: scale(0.88); }
-      20% { opacity: 0.8; }
-      100% { opacity: 0; transform: scale(1.08); }
-    }
-
-    @keyframes cupFillPop {
+    /* PALPITEO SUTIL */
+    @keyframes pulseReward {
       0% {
-        opacity: 0.4;
-        transform: translateY(6px) scale(0.88);
-        box-shadow: inset 0 1px 0 rgba(247,245,242,0.94), 0 0 0 rgba(30,27,24,0);
+        transform: scale(1);
+        box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
       }
-      55% {
-        opacity: 1;
-        transform: translateY(-3px) scale(1.06);
-        box-shadow: 0 10px 18px rgba(111,125,106,0.12);
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 22px rgba(22, 163, 74, 0.35);
       }
       100% {
-        opacity: 1;
-        transform: translateY(-1px) scale(1);
-        box-shadow: 0 8px 18px rgba(111,125,106,0.12);
+        transform: scale(1);
+        box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
       }
     }
 
     @media (max-width: 380px) {
-      .hero h1,
-      .register-title {
-        font-size: 26px;
+      body { padding: 6px; }
+      .screen,
+      .loading {
+        min-height: 100%;
+        height: 100%;
       }
-
-      .cups {
-        gap: 6px;
-      }
-
-      .cup {
-        width: 42px;
-        height: 42px;
-        flex-basis: 42px;
-        padding: 3px;
-        border-radius: 14px;
-      }
-
-      .cup svg {
-        width: 64%;
-        height: 64%;
-        min-width: 24px;
-        min-height: 24px;
-      }
-
-      .screen {
-        padding: 10px;
-        padding-bottom: calc(84px + env(safe-area-inset-bottom));
-      }
-
-      .register {
-        padding: calc(20px + env(safe-area-inset-top)) 12px calc(16px + env(safe-area-inset-bottom));
-      }
-
-      .phone {
-        border-radius: 26px;
-      }
-
-      .phone::before {
-        height: 166px;
-      }
-
-      .qr-box {
-        width: min(100%, 168px);
-      }
+      .screen { padding: 12px; gap: 8px; }
+      .card { padding: 13px; }
+      .hero h1 { font-size: 22px; }
+      .big-points strong { font-size: 30px; }
+      .field input,
+      .ghost-btn,
+      .primary-btn,
+      .secondary-btn { min-height: 42px; }
     }
-
   </style>
 </head>
 <body>
-  <div class="app-shell">
+  <div class="shell">
     <div class="phone">
-      <div class="status-space"></div>
-
-      <section id="registerView" class="register hidden">
-        <div class="register-hero">
-          <div class="brand">
-            <div class="brand-badge" aria-label="Coffee Bike logo"></div>
-            <div>TARJETA DIGITAL</div>
-          </div>
-          
-          <p class="eyebrow register-brand-subtitle">Tarjeta digital</p>
-          <h1 class="register-title"><span class="headline-highlight">Tu café te premia.</span></h1>
-          <p class="register-sub">Regístrate una vez. Guarda tu tarjeta. Acumula y gana</p>
-        </div>
-
-        <div class="register-card">
-          <div class="field">
-            <label for="nombre">Nombre</label>
-            <input id="nombre" type="text" placeholder="Tu nombre" autocomplete="name" />
-          </div>
-
-          <div class="field">
-            <label for="contacto">Teléfono o correo</label>
-            <input id="contacto" type="text" placeholder="Tu teléfono o correo" autocomplete="email tel" inputmode="email" />
-          </div>
-
-          <div class="register-actions">
-            <button class="primary-btn" id="btnCrearCuenta" type="button">Crear cuenta</button>
-            
-            <button class="secondary-btn" id="btnYaTengoCuenta" type="button">Ya tengo cuenta</button>
-          </div>
-
-          <div id="registerFeedback" class="feedback error hidden"></div>
-
-          
-        </div>
-      </section>
-
-      <div id="loginModal" class="modal-overlay hidden">
-        <div class="modal-card">
-          <div class="modal-head">
-            <div>
-              <p class="eyebrow" style="margin-bottom:8px;">Ingresar</p>
-              <h3>Recupera tu tarjeta</h3>
-              
-            </div>
-            <button class="modal-close" id="btnCerrarModal" type="button">✕</button>
-          </div>
-
-          <div class="field">
-            <label for="loginIdCliente">Teléfono o correo</label>
-            <input id="loginIdCliente" type="text" placeholder="Tu teléfono o correo" autocomplete="username" autofocus autocapitalize="off" autocorrect="off" spellcheck="false" />
-          </div>
-
-          <div id="loginFeedback" class="feedback error hidden"></div>
-
-          <div class="modal-actions">
-            <button class="primary-btn" id="btnIngresarCuenta" type="button">Ingresar</button>
-            <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
-          </div>
-
-          <p class="center-note" style="margin-top:0;">Puedes ingresar únicamente con tu teléfono de 8 dígitos o tu correo registrado.</p>
+      <div id="loadingView" class="loading">
+        <div>
+          <strong>Cargando</strong>
+          <p>Preparando datos del cliente.</p>
         </div>
       </div>
 
-      <section id="appView" class="screen hidden">
+      <div id="appView" class="screen hidden">
         <div class="topbar">
           <div class="brand">
-  <div class="brand-badge" aria-label="Coffee Bike logo"></div>
-  <div>TARJETA DIGITAL</div>
-</div>
-          <button class="icon-btn" id="btnSalir" title="Cerrar sesión local" type="button">⌂</button>
+            <div class="brand-badge"></div>
+            <div id="negocioNombre">Panel de validación</div>
+          </div>
+          <button class="icon-btn" id="btnRecargar" title="Recargar">↻</button>
         </div>
 
-        <div id="tabHome" class="tab-panel stack">
-          <div class="card hero">
-            
-            <h1 id="saludoNombre">Hola, cliente</h1>
-            <p id="heroText">Acumula 10 puntos y gana un café gratis.</p>
-            
-          </div>
-
-          <div class="card progress-wrap">
-            <div class="progress-head">
-              <div>
-                <h2>Tu progreso</h2>
-                <p class="muted" id="faltanText">Te faltan 10 puntos para tu premio.</p>
-              </div>
-              <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
-            </div>
-            <div class="cups" id="cupsGrid"></div>
-            <div class="promo">
-              <div>
-                <strong id="promoTitle">Promoción base</strong>
-                <span id="promoSubtitle">Acumula 10 puntos y gana un café gratis.</span>
-              </div>
-              <div style="font-size:22px; color:var(--text); opacity:.9;">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="22" height="22" style="display:block;" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"></path>
-                  <path d="M2 7h20v5H2z"></path>
-                  <path d="M12 7v13"></path>
-                  <path d="M12 7H7.5a2.5 2.5 0 1 1 0-5c2 0 4.5 5 4.5 5z"></path>
-                  <path d="M12 7h4.5a2.5 2.5 0 1 0 0-5c-2 0-4.5 5-4.5 5z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="progress-qr-block">
-              <p class="eyebrow progress-qr-label">Tu QR personal</p>
-              <div class="qr-box">
-                <img id="qrImage" alt="QR del cliente" loading="lazy" decoding="async" fetchpriority="low" />
-              </div>
-              <div class="qr-banner-wrap" aria-label="Banner promocional">
-                <div class="qr-banner" role="img" aria-label="Banner promocional de Coffee Bike"></div>
-              </div>
-            </div>
-            <div id="pointsFeedback" class="points-feedback" aria-live="polite" aria-atomic="true">
-              <span>+1 punto agregado</span>
-            </div>
+        <div class="card hero">
+          <p class="eyebrow">Validación</p>
+          <h1 id="clienteNombre">Cliente</h1>
+          <p id="heroMsg">Listo para validar.</p>
+          <div class="meta-row">
+            <span class="tiny-pill" id="clienteId">ID: —</span>
+            <span class="tiny-pill" id="clienteEstado">Estado: —</span>
           </div>
         </div>
 
-        <div id="tabMovimientos" class="tab-panel stack hidden">
-          <div class="section-title">
-            <h3>Movimientos recientes</h3>
-            <button class="mini-link" id="btnRefresh" type="button">Actualizar</button>
+        <div class="card">
+          <div class="progress-head">
+            <div>
+              <h2>Progreso</h2>
+              <p id="faltanText">Sin datos.</p>
+            </div>
+            <div class="big-points"><strong id="pointsCount">0</strong> / <span id="goalCount">10</span></div>
           </div>
-
-          <div class="card">
-            <div id="movimientosList"></div>
-          </div>
+          <div class="cups" id="cupsGrid"></div>
         </div>
 
-        <div id="tabPerfil" class="tab-panel stack hidden">
-          <div class="card">
-            <p class="eyebrow">Perfil</p>
-            <h3 style="margin:0; font-size:24px; letter-spacing:-0.04em;" id="perfilNombre">—</h3>
-            <p class="muted" style="margin-top:8px;">Esta cuenta está guardada en este dispositivo.</p>
-
-            <div class="mt-20 stack">
-              <div class="row-card">
-                <div class="row-left">
-                  <div class="row-icon"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
-                  <div>
-                    <strong>Teléfono</strong>
-                    <p id="perfilTelefono">—</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row-card">
-                <div class="row-left">
-                  <div class="row-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
-                  <div>
-                    <strong>Correo</strong>
-                    <p id="perfilCorreo">—</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row-card">
-                <div class="row-left">
-                  <div class="row-icon"><svg viewBox="0 0 24 24"><path d="M20 12l-8 8-10-10V2h8l10 10z"/><circle cx="7" cy="7" r="1.5"/></svg></div>
-                  <div>
-                    <strong>ID del cliente</strong>
-                    <p id="perfilId">—</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row-card">
-                <div class="row-left">
-                  <div class="row-icon"><svg viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17l-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3z"/></svg></div>
-                  <div>
-                    <strong>Estado del premio</strong>
-                    <p id="perfilPremio">Sin premio disponible</p>
-                  </div>
-                </div>
-              </div>
+        <div class="card">
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Última visita</span>
+              <span class="info-value" id="ultimaVisita">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Premio</span>
+              <span class="info-value" id="premioEstado">Sin premio</span>
             </div>
           </div>
 
-          <button class="secondary-btn" id="btnBorrarCuenta" type="button">Borrar cuenta de este dispositivo</button>
+          <div class="field">
+            <label for="pinInput">PIN</label>
+            <div class="pin-wrap">
+              <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••" />
+              <button class="ghost-btn" id="btnVerPin" type="button">Ver</button>
+            </div>
+          </div>
+
+          <div class="split-actions">
+            <button class="secondary-btn" id="btnConfirmar">Confirmar punto</button>
+            <button class="primary-btn hidden" id="btnCanjear">Canjear recompensa</button>
+          </div>
+
+          <div id="statusBox" class="status-box info status-hidden" style="margin-top:12px;"></div>
         </div>
 
-        <nav class="bottom-nav" aria-label="Indicadores de página">
-          <button class="nav-btn active" data-tab="tabHome" type="button" aria-label="Ir a inicio" title="Inicio">
-            <span>Inicio</span>
-          </button>
-          <button class="nav-btn" data-tab="tabPerfil" type="button" aria-label="Ir a perfil" title="Perfil">
-            <span>Perfil</span>
-          </button>
-        </nav>
-      </section>
+        <p class="center-note">Validación rápida.</p>
+      </div>
     </div>
   </div>
 
   <script>
+    /*
+      PEGA AQUÍ TU URL DE APPS SCRIPT
+      Ejemplo: const API_URL = 'https://script.google.com/macros/s/XXXXXXXX/exec';
+    */
     const API_URL = 'https://script.google.com/macros/s/AKfycbwJjVizJZJ8tDyA7ESkdfIhaagZ1pEMTnvJpPny6HuhLDRoKwTJu06-L2ZpJVMVO4lR/exec';
-    const STORAGE_KEY = 'tarjetaLealtadCliente';
-    const CACHE_KEY = 'tarjetaLealtadCache';
-    const DASHBOARD_CACHE_KEY = 'tarjetaLealtadDashboardCache';
-    const DASHBOARD_CACHE_TTL = 1000 * 60 * 60 * 6;
+    const DEFAULT_GOAL = 0;
+    const DEFAULT_REWARD = 'Recompensa';
 
-    const registerView = document.getElementById('registerView');
+    const loadingView = document.getElementById('loadingView');
     const appView = document.getElementById('appView');
-    const registerFeedback = document.getElementById('registerFeedback');
-    const btnCrearCuenta = document.getElementById('btnCrearCuenta');
-    const btnYaTengoCuenta = document.getElementById('btnYaTengoCuenta');
-    const btnIngresarCuenta = document.getElementById('btnIngresarCuenta');
-    const btnCerrarModal = document.getElementById('btnCerrarModal');
-    const btnCancelarModal = document.getElementById('btnCancelarModal');
-    const btnSalir = document.getElementById('btnSalir');
-    const btnRefresh = document.getElementById('btnRefresh');
-    const btnBorrarCuenta = document.getElementById('btnBorrarCuenta');
-    const loginModal = document.getElementById('loginModal');
-    const loginFeedback = document.getElementById('loginFeedback');
-    const loginIdCliente = document.getElementById('loginIdCliente');
-    const contactoInput = document.getElementById('contacto');
-    const nombreInput = document.getElementById('nombre');
-    const phoneShell = document.querySelector('.phone');
-
-    const ui = {
-      saludoNombre: document.getElementById('saludoNombre'),
-      perfilNombre: document.getElementById('perfilNombre'),
-      perfilTelefono: document.getElementById('perfilTelefono'),
-      perfilCorreo: document.getElementById('perfilCorreo'),
-      perfilId: document.getElementById('perfilId'),
-      pointsCount: document.getElementById('pointsCount'),
-      goalCount: document.getElementById('goalCount'),
-
-      heroText: document.getElementById('heroText'),
-      faltanText: document.getElementById('faltanText'),
-      promoTitle: document.getElementById('promoTitle'),
-      promoSubtitle: document.getElementById('promoSubtitle'),
-      perfilPremio: document.getElementById('perfilPremio'),
-      qrImage: document.getElementById('qrImage'),
-      cupsGrid: document.getElementById('cupsGrid'),
-      movimientosList: document.getElementById('movimientosList'),
-      progressCard: document.querySelector('.progress-wrap'),
-      pointsFeedback: document.getElementById('pointsFeedback')
-    };
+    const btnRecargar = document.getElementById('btnRecargar');
+    const btnVerPin = document.getElementById('btnVerPin');
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const btnCanjear = document.getElementById('btnCanjear');
+    const statusBox = document.getElementById('statusBox');
+    const pinInput = document.getElementById('pinInput');
 
     const state = {
+      id: null,
       cliente: null,
-      metaPuntos: 10,
-      recompensa: 'café gratis',
-      negocio: 'Café Urbano',
-      movimientos: [],
-      qrPendingId: null,
-      qrRenderedId: null,
-      dashboardLoaded: false,
-      pollTimer: null,
-      pollInFlight: false,
-      pollIntervalMs: 2500,
-      feedbackTimer: null,
-      rewardSoundTimer: null,
-      tabAnimationTimer: null,
-      activeTabId: 'tabHome',
-      sound: {
-        pointLastPlayedAt: 0,
-        rewardLastPlayedAt: 0,
-        lastPoints: 0,
-        rewardPlayed: false,
-        audioUnlocked: false,
-        unlockHandlersBound: false,
-        pointTimers: [],
-        rewardTimer: null
-      },
-      swipe: {
-        startX: 0,
-        startY: 0,
-        startTime: 0,
-        active: false,
-        ignore: false,
-        lockedAxis: '',
-        touchId: null,
-        navigating: false,
-        cooldownUntil: 0
-      },
-      navInteraction: {
-        suppressClickUntil: 0,
-        lockTabUntil: 0,
-        preferredTabId: 'tabHome'
-      },
-      syncStatusTimer: null,
-      bootstrappingFastSession: false,
-      syncPromise: null,
-      syncTargetId: '',
-      consecutivePollErrors: 0,
-      isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false
+      metaPuntos: DEFAULT_GOAL,
+      recompensa: DEFAULT_REWARD,
+      negocio: 'Panel de validación'
     };
 
-    const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
-    const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
-
-    // SISTEMA DE SONIDOS
-    // sound-point.mp3  → sonido de punto
-    // sound-reward.mp3 → sonido de recompensa
-    //
-    // NOTA:
-    // Los audios deben estar en la raíz del proyecto
-    const soundFx = {
-      point: new Audio('sound-point.mp3'),
-      reward: new Audio('sound-reward.mp3')
-    };
-
-    const SOUND_CONFIG = {
-      pointStepDelay: 120,
-      pointPeakDelay: 340,
-      rewardExtraDelay: 220
-    };
-
-    Object.values(soundFx).forEach((audio) => {
-      audio.preload = 'auto';
-      audio.playsInline = true;
-      audio.setAttribute?.('playsinline', 'true');
-      audio.setAttribute?.('webkit-playsinline', 'true');
-    });
-
-    function preloadSoundEffects() {
-      Object.values(soundFx).forEach((audio) => {
-        try {
-          audio.load();
-        } catch {}
-      });
-    }
-
-    function clearPointSoundTimers() {
-      if (!state.sound.pointTimers.length) return;
-      state.sound.pointTimers.forEach((timerId) => clearTimeout(timerId));
-      state.sound.pointTimers = [];
-    }
-
-    function clearRewardSoundTimer() {
-      if (state.sound.rewardTimer) {
-        clearTimeout(state.sound.rewardTimer);
-        state.sound.rewardTimer = null;
-      }
-      clearTimeout(state.rewardSoundTimer);
-      state.rewardSoundTimer = null;
-    }
-
-    function clearAllSoundTimers() {
-      clearPointSoundTimers();
-      clearRewardSoundTimer();
-    }
-
-    function unlockAudioPlayback() {
-      if (state.sound.audioUnlocked) return;
-      state.sound.audioUnlocked = true;
-
-      Object.values(soundFx).forEach((audio) => {
-        try {
-          audio.muted = true;
-          audio.currentTime = 0;
-          const playPromise = audio.play();
-          if (playPromise && typeof playPromise.then === 'function') {
-            playPromise
-              .then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-                audio.muted = false;
-              })
-              .catch(() => {
-                audio.muted = false;
-              });
-          } else {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.muted = false;
-          }
-        } catch {
-          audio.muted = false;
-        }
-      });
-
-      detachAudioUnlockHandlers();
-    }
-
-    function attachAudioUnlockHandlers() {
-      if (state.sound.unlockHandlersBound) return;
-      state.sound.unlockHandlersBound = true;
-      document.addEventListener('touchstart', unlockAudioPlayback, { passive: true });
-      document.addEventListener('click', unlockAudioPlayback, { passive: true });
-    }
-
-    function detachAudioUnlockHandlers() {
-      if (!state.sound.unlockHandlersBound) return;
-      document.removeEventListener('touchstart', unlockAudioPlayback, { passive: true });
-      document.removeEventListener('click', unlockAudioPlayback, { passive: true });
-      state.sound.unlockHandlersBound = false;
-    }
-
-    function playSoundEffect(type, options = {}) {
-      const audio = soundFx[type];
-      if (!audio) return;
-
-      const { force = false } = options;
-      const now = Date.now();
-      const minGap = type === 'reward' ? 700 : 90;
-      const lastPlayedAt = type === 'reward'
-        ? state.sound.rewardLastPlayedAt
-        : state.sound.pointLastPlayedAt;
-
-      if (!force && now - lastPlayedAt < minGap) return;
-
-      if (type === 'reward') {
-        state.sound.rewardLastPlayedAt = now;
-      } else {
-        state.sound.pointLastPlayedAt = now;
-      }
-
-      try {
-        audio.pause();
-        audio.currentTime = 0;
-        const playPromise = audio.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {});
-        }
-      } catch {}
-    }
-
-    function schedulePointSound(delay) {
-      const timerId = setTimeout(() => {
-        playSoundEffect('point', { force: true });
-        state.sound.pointTimers = state.sound.pointTimers.filter((id) => id !== timerId);
-      }, Math.max(0, delay));
-
-      state.sound.pointTimers.push(timerId);
-    }
-
-    function scheduleRewardSound(delay) {
-      clearRewardSoundTimer();
-      state.sound.rewardTimer = setTimeout(() => {
-        playSoundEffect('reward', { force: true });
-        state.sound.rewardTimer = null;
-        state.rewardSoundTimer = null;
-      }, Math.max(0, delay));
-
-      state.rewardSoundTimer = state.sound.rewardTimer;
-    }
-
-    function setSoundStateBaseline(points, rewardAvailable) {
-      state.sound.lastPoints = Math.max(0, safeNumber(points, 0));
-      state.sound.rewardPlayed = Boolean(rewardAvailable);
-    }
-
-    function syncPointSounds(previousPoints, currentPoints, goal, previousRewardAvailable, rewardAvailable) {
-      const from = Math.max(0, safeNumber(previousPoints, state.sound.lastPoints));
-      const to = Math.max(0, safeNumber(currentPoints, 0));
-      const effectiveFrom = Math.max(from, Math.max(0, safeNumber(state.sound.lastPoints, 0)));
-
-      if (to <= effectiveFrom) {
-        setSoundStateBaseline(to, rewardAvailable);
-        return;
-      }
-
-      clearAllSoundTimers();
-
-      const gainedPoints = to - effectiveFrom;
-
-      for (let i = 0; i < gainedPoints; i += 1) {
-        const delay = (i * SOUND_CONFIG.pointStepDelay) + SOUND_CONFIG.pointPeakDelay;
-        schedulePointSound(delay);
-      }
-
-      const justCompletedGoal = effectiveFrom < goal && to >= goal;
-      const rewardJustUnlocked = !previousRewardAvailable && rewardAvailable;
-
-      if ((justCompletedGoal || rewardJustUnlocked) && !state.sound.rewardPlayed) {
-        const rewardDelay = ((gainedPoints - 1) * SOUND_CONFIG.pointStepDelay)
-          + SOUND_CONFIG.pointPeakDelay
-          + SOUND_CONFIG.rewardExtraDelay;
-        scheduleRewardSound(rewardDelay);
-        state.sound.rewardPlayed = true;
-      } else if (!rewardAvailable) {
-        state.sound.rewardPlayed = false;
-      }
-
-      state.sound.lastPoints = to;
-    }
-
-    function showRegister(message = '', type = 'error') {
-      stopAutoRefresh();
-      setSyncStatus(false);
-      state.activeTabId = 'tabHome';
-      registerView.classList.remove('hidden');
-      appView.classList.add('hidden');
-      closeLoginModal();
-
-      if (message) {
-        registerFeedback.textContent = message;
-        registerFeedback.className = `feedback ${type}`;
-        registerFeedback.classList.remove('hidden');
-      } else {
-        registerFeedback.textContent = '';
-        registerFeedback.className = 'feedback error hidden';
-        registerFeedback.classList.add('hidden');
-      }
-    }
-
-    function showApp() {
-      registerView.classList.add('hidden');
-      appView.classList.remove('hidden');
-      closeLoginModal();
-      startAutoRefresh();
-    }
-
-    function ensureLoginInputVisible() {
-      if (loginModal.classList.contains('hidden')) return;
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          loginIdCliente.scrollIntoView({
-            block: 'center',
-            inline: 'nearest',
-            behavior: 'smooth'
-          });
-        });
-      });
-    }
-
-    function openLoginModal() {
-      loginModal.classList.remove('hidden');
-      loginFeedback.textContent = '';
-      loginFeedback.className = 'feedback error hidden';
-      loginIdCliente.value = '';
-
-      setTimeout(() => {
-        loginIdCliente.focus({ preventScroll: true });
-        ensureLoginInputVisible();
-      }, 120);
-    }
-
-    function closeLoginModal() {
-      loginModal.classList.add('hidden');
-      loginFeedback.textContent = '';
-      loginFeedback.className = 'feedback error hidden';
-      loginIdCliente.value = '';
-      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
-    }
-
-    function showLoginFeedback(message, type = 'error') {
-      loginFeedback.textContent = message;
-      loginFeedback.className = `feedback ${type}`;
-      loginFeedback.classList.remove('hidden');
-    }
-
-    function saveLocalCliente(cliente) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cliente));
-    }
-
-    function getLocalCliente() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      } catch {
-        return null;
-      }
-    }
-
-    function clearLocalCliente() {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    function saveCache(snapshot) {
-      try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-          ...snapshot,
-          savedAt: Date.now()
-        }));
-      } catch {}
-    }
-
-    function getCache() {
-      try {
-        return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      } catch {
-        return null;
-      }
-    }
-
-    function clearCache() {
-      localStorage.removeItem(CACHE_KEY);
-      localStorage.removeItem(DASHBOARD_CACHE_KEY);
-    }
-
-    function saveDashboardCache(config) {
-      try {
-        localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify({
-          config,
-          savedAt: Date.now()
-        }));
-      } catch {}
-    }
-
-    function getDashboardCache() {
-      try {
-        return JSON.parse(localStorage.getItem(DASHBOARD_CACHE_KEY) || 'null');
-      } catch {
-        return null;
-      }
-    }
-
-    function clearFormInputs() {
-      nombreInput.value = '';
-      contactoInput.value = '';
-      loginIdCliente.value = '';
-    }
-
-    function setSyncStatus(active, label = 'Actualizando...') {
-      if (!phoneShell) return;
-
-      clearTimeout(state.syncStatusTimer);
-
-      if (!active) {
-        phoneShell.classList.remove('syncing');
-        phoneShell.removeAttribute('data-sync-label');
-        return;
-      }
-
-      phoneShell.dataset.syncLabel = label;
-      phoneShell.classList.add('syncing');
-      state.syncStatusTimer = setTimeout(() => {
-        phoneShell.classList.remove('syncing');
-        phoneShell.removeAttribute('data-sync-label');
-      }, 2600);
-    }
-
-    function normalizeIdentifier(value) {
-      const raw = String(value || '').trim();
-      const digits = raw.replace(/\D/g, '');
-      if (digits.length === 8) return digits;
-      return raw.toLowerCase();
-    }
-
-    function isValidEmail(value) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(value || '').trim());
-    }
-
-    function parseContactoGuatemala(value) {
-      const raw = String(value || '').trim();
-      if (!raw) {
-        return { ok: false, message: 'Ingresa tu teléfono o correo.' };
-      }
-
-      const digits = raw.replace(/\D/g, '');
-      if (digits.length === 8) {
-        return { ok: true, type: 'telefono', value: digits };
-      }
-
-      if (raw.includes('@') && isValidEmail(raw)) {
-        return { ok: true, type: 'correo', value: raw.toLowerCase() };
-      }
-
-      return {
-        ok: false,
-        message: 'Solo se permiten teléfonos de Guatemala de 8 dígitos o correos válidos.'
-      };
-    }
-
-    function clienteMatchesIdentificador(cliente, identificador) {
-      if (!cliente || !identificador) return false;
-      const target = normalizeIdentifier(identificador);
-      const candidatos = [cliente.id_cliente, cliente.telefono, cliente.correo, cliente.nombre]
-        .map(normalizeIdentifier)
-        .filter(Boolean);
-      return candidatos.includes(target);
-    }
-
-    function hydrateClienteSession(snapshot = {}, options = {}) {
-      const cliente = snapshot?.cliente || null;
-      if (!cliente) return false;
-
-      const {
-        movimientos = [],
-        config = null,
-        syncLabel = '',
-        preserveActiveTab = false
-      } = options;
-
-      state.cliente = cliente;
-      state.movimientos = Array.isArray(movimientos) ? movimientos : [];
-
-      if (config) {
-        applyDashboardConfig(config);
-      } else {
-        const cachedDashboard = getDashboardCache();
-        if (cachedDashboard?.config) {
-          applyDashboardConfig(cachedDashboard.config);
-        } else if (!state.dashboardLoaded) {
-          applyDashboardConfig({});
-        }
-      }
-
-      saveLocalCliente(state.cliente);
-      saveCache({
-        cliente: state.cliente,
-        movimientos: state.movimientos,
-        config: {
-          meta_puntos: state.metaPuntos,
-          recompensa: state.recompensa,
-          nombre_negocio: state.negocio
-        }
-      });
-
-      renderCliente();
-      showApp();
-      setActiveTab(preserveActiveTab ? getActiveTabId() : 'tabHome', { animate: false });
-
-      if (syncLabel) {
-        setSyncStatus(true, syncLabel);
-      }
-
-      return true;
-    }
-
-    function buildFastRegisterCliente(nombre, contacto, clienteServidor = {}) {
-      const esCorreo = String(contacto || '').includes('@');
-      const fallbackId = clienteServidor.id_cliente || `TMP-${Date.now()}`;
-      return {
-        id_cliente: fallbackId,
-        nombre: clienteServidor.nombre || nombre,
-        telefono: clienteServidor.telefono || (esCorreo ? '' : contacto),
-        correo: clienteServidor.correo || (esCorreo ? contacto : ''),
-        puntos: safeNumber(clienteServidor.puntos, 0),
-        premio_disponible: clienteServidor.premio_disponible || 'NO',
-        fecha_registro: clienteServidor.fecha_registro || new Date().toISOString()
-      };
-    }
-
-    function getBestLocalSnapshotForLogin(identificador) {
-      const localCliente = getLocalCliente();
-      const cached = getCache();
-      const matchesLocal = clienteMatchesIdentificador(localCliente, identificador);
-      const matchesCached = clienteMatchesIdentificador(cached?.cliente, identificador);
-
-      if (matchesCached) {
-        return {
-          cliente: cached.cliente,
-          movimientos: Array.isArray(cached.movimientos) ? cached.movimientos : [],
-          config: cached.config || null
-        };
-      }
-
-      if (matchesLocal) {
-        return {
-          cliente: localCliente,
-          movimientos: [],
-          config: cached?.config || null
-        };
-      }
-
-      return null;
-    }
-
-    function backgroundSyncCliente(identificador, options = {}) {
-      const targetId = String(identificador || '').trim();
-      if (!targetId) return Promise.resolve(false);
-
-      if (state.syncPromise && state.syncTargetId === targetId) {
-        return state.syncPromise;
-      }
-
-      state.syncTargetId = targetId;
-      state.syncPromise = cargarClienteDesdeServidor(targetId, {
-        silent: true,
-        preserveActiveTab: true,
-        ...options
-      })
-        .then(() => {
-          state.consecutivePollErrors = 0;
-          setSyncStatus(true, 'Listo');
-          return true;
-        })
-        .catch((error) => {
-          setSyncStatus(false);
-          throw error;
-        })
-        .finally(() => {
-          state.syncPromise = null;
-          state.syncTargetId = '';
-        });
-
-      return state.syncPromise;
+    function qs(name) {
+      return new URLSearchParams(window.location.search).get(name);
     }
 
     function safeText(value, fallback = '—') {
-      const text = String(value ?? '').trim();
-      return text || fallback;
+      return value && String(value).trim() ? String(value).trim() : fallback;
     }
 
-    function safeNumber(value, fallback = 0) {
-      const n = Number(value);
-      return Number.isFinite(n) ? n : fallback;
-    }
-
-    function buildQrData(idCliente) {
-  const id = String(idCliente || '').trim();
-  const targetUrl = `https://pjuanfrancisco700-lang.github.io/Confirmar_punto/?id=${encodeURIComponent(id)}`;
-  return `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(targetUrl)}`;
-}
-
-    function formatDate(input) {
-      if (!input) return 'Fecha no disponible';
-      const date = new Date(input);
-      if (Number.isNaN(date.getTime())) return String(input);
-      return new Intl.DateTimeFormat('es-GT', {
-        day: '2-digit',
+    function formatDate(value) {
+      if (!value) return 'Sin registro';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return safeText(value, 'Sin fecha');
+      return date.toLocaleString('es-GT', {
+        year: 'numeric',
         month: 'short',
-        year: 'numeric'
-      }).format(date);
-    }
-
-    function renderCups(points, goal, previousPoints = null) {
-      ui.cupsGrid.innerHTML = '';
-      const fragment = document.createDocumentFragment();
-      const prev = previousPoints === null ? points : Math.max(0, safeNumber(previousPoints, 0));
-
-      let newFillIndex = 0;
-
-      for (let i = 1; i <= goal; i += 1) {
-        const cup = document.createElement('div');
-        const isFilled = i <= points;
-        const isNewFill = points > prev && i > prev && i <= points;
-        const isGoalCup = i === goal;
-        const fillDelay = isNewFill ? newFillIndex * SOUND_CONFIG.pointStepDelay : 0;
-        cup.className = `cup ${isFilled ? 'filled' : ''} ${isNewFill ? 'fill-pop' : ''} ${isGoalCup ? 'goal-cup' : ''}`.trim();
-        cup.setAttribute('aria-hidden', 'true');
-        cup.style.setProperty('--fill-delay', `${fillDelay}ms`);
-        if (isNewFill) {
-          newFillIndex += 1;
-        }
-        cup.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M7 8.5h8.5a1.5 1.5 0 0 1 1.5 1.5v3.5A4.5 4.5 0 0 1 12.5 18H10A4 4 0 0 1 6 14v-4a1.5 1.5 0 0 1 1-1.5Z"></path>
-            <path d="M17 10h1.1A2.9 2.9 0 0 1 21 12.9v.2A2.9 2.9 0 0 1 18.1 16H17"></path>
-            <path d="M9 20h6"></path>
-          </svg>
-        `;
-        fragment.appendChild(cup);
-      }
-
-      ui.cupsGrid.appendChild(fragment);
-    }
-
-    function renderMovimientos() {
-      ui.movimientosList.innerHTML = '';
-
-      if (!state.movimientos.length) {
-        ui.movimientosList.innerHTML = `
-          <div class="row-card">
-            <div>
-              <strong>Sin movimientos todavía</strong>
-              <p>Cuando acumules puntos o canjees premios, aparecerán aquí.</p>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      state.movimientos.forEach((mov) => {
-        const row = document.createElement('div');
-        row.className = 'row-card';
-
-        const tipo = String(mov.tipo || '').toUpperCase();
-        const isSuma = tipo === 'SUMA';
-        row.innerHTML = `
-          <div class="row-left">
-            <div class="row-icon">${isSuma ? '☕' : '🎁'}</div>
-            <div>
-              <strong>${isSuma ? 'Punto agregado' : 'Canje de recompensa'}</strong>
-              <p>${formatDate(mov.fecha)}</p>
-            </div>
-          </div>
-          <div class="pill">${isSuma ? '+1 punto' : 'Canje'}</div>
-        `;
-        ui.movimientosList.appendChild(row);
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     }
 
-    function getActiveTabId() {
-      if (state.activeTabId && tabPanels.some((panel) => panel.id === state.activeTabId)) {
-        return state.activeTabId;
-      }
-
-      const activeButton = navButtons.find((btn) => btn.classList.contains('active'));
-      state.activeTabId = activeButton?.dataset.tab || 'tabHome';
-      return state.activeTabId;
+    function showStatus(message, type = 'info') {
+      statusBox.textContent = message;
+      statusBox.className = `status-box ${type}`;
+      statusBox.classList.remove('status-hidden');
     }
 
-    function animatePointsValue(from, to, duration = 420) {
-      if (!ui.pointsCount) return;
-      const startValue = safeNumber(from, 0);
-      const endValue = safeNumber(to, 0);
-
-      if (startValue === endValue) {
-        ui.pointsCount.textContent = endValue;
-        return;
-      }
-
-      const startTime = performance.now();
-
-      function step(now) {
-        const progress = Math.min(1, (now - startTime) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const value = Math.round(startValue + ((endValue - startValue) * eased));
-        ui.pointsCount.textContent = value;
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          ui.pointsCount.textContent = endValue;
-        }
-      }
-
-      requestAnimationFrame(step);
+    function hideStatus() {
+      statusBox.className = 'status-box info status-hidden';
+      statusBox.textContent = '';
     }
 
-    function flashProgressCard() {
-      if (!ui.progressCard) return;
-      ui.progressCard.classList.remove('update-glow');
-      void ui.progressCard.offsetWidth;
-      ui.progressCard.classList.add('update-glow');
-
-      setTimeout(() => {
-        ui.progressCard.classList.remove('update-glow');
-      }, 1000);
+    function showApp() {
+      loadingView.classList.add('hidden');
+      appView.classList.remove('hidden');
     }
 
-    function showPointsFeedback(delta = 1) {
-      if (!ui.pointsFeedback) return;
-      const safeDelta = Math.max(1, safeNumber(delta, 1));
-      const label = safeDelta === 1 ? '+1 punto agregado' : `+${safeDelta} puntos agregados`;
-      const bubble = ui.pointsFeedback.querySelector('span');
-      if (bubble) bubble.textContent = label;
+    function applyServerData(data) {
+      state.metaPuntos = Number(
+        data?.meta_puntos ??
+        data?.metaPuntos ??
+        data?.cliente?.meta_puntos ??
+        data?.cliente?.metaPuntos ??
+        data?.cliente?.meta ??
+        state.metaPuntos ??
+        10
+      );
 
-      clearTimeout(state.feedbackTimer);
-      ui.pointsFeedback.classList.add('show');
+      state.recompensa = String(
+        data?.recompensa ??
+        state.recompensa ??
+        DEFAULT_REWARD
+      ).trim();
 
-      state.feedbackTimer = setTimeout(() => {
-        ui.pointsFeedback.classList.remove('show');
-      }, 2000);
+      state.negocio = String(
+        data?.nombre_negocio ??
+        state.negocio ??
+        'Panel de validación'
+      ).trim();
     }
 
-    function playPointsIncreaseFeedback(previousPoints, currentPoints) {
-      const from = Math.max(0, safeNumber(previousPoints, 0));
-      const to = Math.max(0, safeNumber(currentPoints, 0));
-      const delta = Math.max(1, to - from);
-
-      animatePointsValue(from, to);
-      ui.pointsCount.classList.remove('points-bump');
-      void ui.pointsCount.offsetWidth;
-      ui.pointsCount.classList.add('points-bump');
-      flashProgressCard();
-      showPointsFeedback(delta);
-    }
-
-    function applyDashboardConfig(config = {}) {
-      state.metaPuntos = Math.max(1, safeNumber(config.meta_puntos, 10));
-      state.recompensa = safeText(config.recompensa, 'café gratis');
-      state.negocio = safeText(config.nombre_negocio, 'Café Urbano');
-      state.dashboardLoaded = true;
-    }
-
-    function scheduleQrRender(idCliente) {
-      const nextId = String(idCliente || '').trim();
-      if (!nextId || nextId === state.qrRenderedId) return;
-
-      state.qrPendingId = nextId;
-
-      const run = () => {
-        if (!state.qrPendingId) return;
-        const pendingId = state.qrPendingId;
-        state.qrPendingId = null;
-
-        if (pendingId === state.qrRenderedId) return;
-
-        ui.qrImage.src = buildQrData(pendingId);
-        state.qrRenderedId = pendingId;
-      };
-
-      if (window.requestIdleCallback) {
-        requestIdleCallback(run, { timeout: 700 });
-      } else {
-        setTimeout(run, 60);
+    function renderCups(points, goal) {
+      const cupsGrid = document.getElementById('cupsGrid');
+      cupsGrid.innerHTML = '';
+      const total = Math.max(Number(goal) || 1, 1);
+      for (let i = 1; i <= total; i++) {
+        const item = document.createElement('div');
+        item.className = `cup ${i <= points ? 'filled' : ''}`;
+        item.textContent = '';
+        cupsGrid.appendChild(item);
       }
     }
 
-    async function loadDashboardConfig(force = false) {
-      const cached = getDashboardCache();
-      const isFresh = cached?.savedAt && (Date.now() - cached.savedAt < DASHBOARD_CACHE_TTL);
-
-      if (!force && isFresh && cached?.config) {
-        applyDashboardConfig(cached.config);
-        return cached.config;
-      }
-
-      try {
-        const dashboard = await apiRequest({ action: 'getDashboard' });
-        if (dashboard?.config) {
-          applyDashboardConfig(dashboard.config);
-          saveDashboardCache(dashboard.config);
-          return dashboard.config;
-        }
-      } catch (error) {
-        if (cached?.config) {
-          applyDashboardConfig(cached.config);
-          return cached.config;
-        }
-        throw error;
-      }
-
-      if (cached?.config) {
-        applyDashboardConfig(cached.config);
-        return cached.config;
-      }
-
-      throw new Error('No se pudo cargar la configuración.');
-    }
-
-    function renderCliente(options = {}) {
+    function renderCliente() {
       const c = state.cliente;
       if (!c) return;
 
-      const {
-        previousPoints = null,
-        previousRewardAvailable = false,
-        animatePoints = false
-      } = options;
-
-      const puntos = Math.max(0, safeNumber(c.puntos, 0));
-      const meta = Math.max(1, safeNumber(state.metaPuntos, 10));
+      const points = Number(c.puntos || 0);
       const premioDisponible = String(c.premio_disponible || 'NO').toUpperCase() === 'SI';
-      const faltan = Math.max(0, meta - puntos);
+      const faltan = Math.max(0, state.metaPuntos - points);
 
-      ui.saludoNombre.textContent = `Hola, ${safeText(c.nombre, 'cliente')}`;
-      ui.perfilNombre.textContent = safeText(c.nombre);
-      ui.perfilTelefono.textContent = safeText(c.telefono, 'No registrado');
-      ui.perfilCorreo.textContent = safeText(c.correo, 'No registrado');
-      ui.perfilId.textContent = safeText(c.id_cliente);
+      document.getElementById('negocioNombre').textContent = state.negocio;
+      document.getElementById('clienteNombre').textContent = safeText(c.nombre, 'Cliente');
+      document.getElementById('clienteId').textContent = `ID: ${safeText(c.id_cliente)}`;
+      document.getElementById('clienteEstado').textContent = `Estado: ${safeText(c.estado, 'ACTIVO')}`;
+      document.getElementById('pointsCount').textContent = points;
+      document.getElementById('goalCount').textContent = state.metaPuntos;
+      document.getElementById('ultimaVisita').textContent = formatDate(c.ultima_visita);
+      document.getElementById('premioEstado').textContent = premioDisponible ? `${state.recompensa} disponible` : 'Sin premio';
 
-      ui.goalCount.textContent = meta;
-      ui.heroText.textContent = 'Tu tarjeta está activa.';
+      document.getElementById('heroMsg').textContent = premioDisponible
+        ? 'Recompensa disponible.'
+        : 'Ingresa PIN para validar.';
 
-      ui.faltanText.textContent = premioDisponible
-        ? 'Ya puedes reclamar tu recompensa en caja.'
-        : faltan === 0
-          ? 'Ya casi: tu recompensa está lista para activarse.'
-          : `Te faltan ${faltan} punto${faltan === 1 ? '' : 's'} para tu premio.`;
+      document.getElementById('faltanText').textContent = premioDisponible
+        ? 'Listo para canjear.'
+        : `Faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'}.`;
 
-      ui.promoTitle.textContent = premioDisponible ? 'Premio disponible' : 'Promoción base';
-      ui.promoSubtitle.textContent = premioDisponible
-        ? `Tienes un ${state.recompensa} listo para canjear.`
-        : `Acumula ${meta} puntos y gana un ${state.recompensa}.`;
+      btnCanjear.classList.toggle('hidden', !premioDisponible);
+      btnConfirmar.classList.toggle('hidden', premioDisponible);
 
-      ui.perfilPremio.textContent = premioDisponible
-        ? `Tienes un ${state.recompensa} disponible.`
-        : 'Sin premio disponible';
-
-      ui.qrImage.alt = `QR de ${safeText(c.nombre, 'cliente')}`;
-      scheduleQrRender(c.id_cliente);
-
-      renderCups(puntos, meta, previousPoints);
-      renderMovimientos();
-
-      if (animatePoints && previousPoints !== null && puntos > safeNumber(previousPoints, 0)) {
-        playPointsIncreaseFeedback(previousPoints, puntos);
-        syncPointSounds(previousPoints, puntos, meta, previousRewardAvailable, premioDisponible);
+      if (premioDisponible) {
+        btnCanjear.classList.add('btn-reward');
       } else {
-        ui.pointsCount.textContent = puntos;
-        setSoundStateBaseline(puntos, premioDisponible);
-      }
-    }
-
-    function getTabIndex(tabId) {
-      return navButtons.findIndex((btn) => btn.dataset.tab === tabId);
-    }
-
-    function animateTabEntry(tabId, direction = 'next') {
-      const panel = document.getElementById(tabId);
-      if (!panel) return;
-
-      const animationClass = direction === 'prev' ? 'tab-enter-prev' : 'tab-enter-next';
-      panel.classList.remove('tab-enter-next', 'tab-enter-prev');
-      void panel.offsetWidth;
-      panel.classList.add(animationClass);
-
-      clearTimeout(state.tabAnimationTimer);
-      state.tabAnimationTimer = setTimeout(() => {
-        panel.classList.remove('tab-enter-next', 'tab-enter-prev');
-      }, 260);
-    }
-
-    function setActiveTab(tabId, options = {}) {
-      const {
-        direction = null,
-        animate = false
-      } = options;
-
-      if (!tabId || !tabPanels.some((panel) => panel.id === tabId)) return;
-
-      const currentTabId = getActiveTabId();
-      if (currentTabId === tabId) return;
-
-      tabPanels.forEach((panel) => {
-        panel.classList.toggle('hidden', panel.id !== tabId);
-      });
-
-      navButtons.forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.tab === tabId);
-      });
-
-      state.activeTabId = tabId;
-
-      if (animate) {
-        animateTabEntry(tabId, direction === 'prev' ? 'prev' : 'next');
-      }
-    }
-
-    function goToAdjacentTab(offset) {
-      const orderedTabs = navButtons.map((btn) => btn.dataset.tab);
-      if (!orderedTabs.length) return;
-
-      const currentIndex = Math.max(0, orderedTabs.indexOf(getActiveTabId()));
-      const targetIndex = currentIndex + offset;
-      if (targetIndex < 0 || targetIndex >= orderedTabs.length) return;
-
-      const targetTabId = orderedTabs[targetIndex];
-      state.navInteraction.preferredTabId = targetTabId;
-      state.navInteraction.lockTabUntil = Date.now() + 900;
-
-      setActiveTab(targetTabId, {
-        direction: offset > 0 ? 'next' : 'prev',
-        animate: true
-      });
-    }
-
-    function shouldIgnoreSwipeStart(target) {
-      return Boolean(target.closest('button, a, input, textarea, select, label, [role="button"], .modal-card, .bottom-nav, .nav-btn, [data-tab]'));
-    }
-
-    function resetSwipeState() {
-      state.swipe.startX = 0;
-      state.swipe.startY = 0;
-      state.swipe.startTime = 0;
-      state.swipe.active = false;
-      state.swipe.ignore = false;
-      state.swipe.lockedAxis = '';
-      state.swipe.touchId = null;
-    }
-
-    function getTrackedTouch(touches) {
-      if (state.swipe.touchId === null) return null;
-      return Array.from(touches).find((touch) => touch.identifier === state.swipe.touchId) || null;
-    }
-
-    function setupSwipeNavigation() {
-      const swipeSurface = appView;
-      if (!swipeSurface) return;
-
-      swipeSurface.addEventListener('touchstart', (event) => {
-        if (appView.classList.contains('hidden') || (loginModal && !loginModal.classList.contains('hidden'))) return;
-        if (state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
-        if (event.touches.length !== 1) {
-          resetSwipeState();
-          return;
-        }
-
-        const touch = event.touches[0];
-        state.swipe.startX = touch.clientX;
-        state.swipe.startY = touch.clientY;
-        state.swipe.startTime = Date.now();
-        state.swipe.active = true;
-        state.swipe.ignore = shouldIgnoreSwipeStart(event.target);
-        state.swipe.lockedAxis = '';
-        state.swipe.touchId = touch.identifier;
-      }, { passive: true });
-
-      swipeSurface.addEventListener('touchmove', (event) => {
-        if (!state.swipe.active || state.swipe.ignore) return;
-        const touch = getTrackedTouch(event.touches);
-        if (!touch) return;
-
-        const deltaX = touch.clientX - state.swipe.startX;
-        const deltaY = touch.clientY - state.swipe.startY;
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-
-        if (!state.swipe.lockedAxis) {
-          if (absX < 10 && absY < 10) return;
-          if (absY > absX * 1.15) {
-            state.swipe.lockedAxis = 'y';
-            return;
-          }
-          if (absX > absY * 1.5) {
-            state.swipe.lockedAxis = 'x';
-          } else {
-            return;
-          }
-        }
-
-        if (state.swipe.lockedAxis === 'x') {
-          event.preventDefault();
-        }
-      }, { passive: false });
-
-      swipeSurface.addEventListener('touchend', (event) => {
-        if (!state.swipe.active) return;
-
-        const touch = getTrackedTouch(event.changedTouches);
-        const ignore = state.swipe.ignore;
-        const endedOnIgnoredTarget = shouldIgnoreSwipeStart(event.target);
-        const lockedAxis = state.swipe.lockedAxis;
-        const startX = state.swipe.startX;
-        const startY = state.swipe.startY;
-        const startTime = state.swipe.startTime;
-        resetSwipeState();
-
-        if (!touch || ignore || endedOnIgnoredTarget || lockedAxis !== 'x' || state.swipe.navigating || Date.now() < state.swipe.cooldownUntil) return;
-
-        const deltaX = touch.clientX - startX;
-        const deltaY = touch.clientY - startY;
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-        const elapsed = Math.max(1, Date.now() - startTime);
-        const velocityX = absX / elapsed;
-
-        const isIntentionalHorizontalSwipe = absX >= 78 && absY <= 52 && absX > absY * 1.8;
-        const isFastEnough = velocityX >= 0.2;
-
-        if (!isIntentionalHorizontalSwipe || !isFastEnough) return;
-
-        state.swipe.navigating = true;
-        state.swipe.cooldownUntil = Date.now() + 320;
-
-        if (deltaX < 0) {
-          goToAdjacentTab(1);
-        } else {
-          goToAdjacentTab(-1);
-        }
-
-        setTimeout(() => {
-          state.swipe.navigating = false;
-        }, 260);
-      }, { passive: true });
-
-      swipeSurface.addEventListener('touchcancel', () => {
-        resetSwipeState();
-        state.swipe.navigating = false;
-      }, { passive: true });
-    }
-
-    async function apiRequest(params) {
-      const url = new URL(API_URL);
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          url.searchParams.set(key, value);
-        }
-      });
-
-      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      const timeoutId = controller
-        ? setTimeout(() => controller.abort(), 12000)
-        : null;
-
-      try {
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          cache: 'no-store',
-          signal: controller ? controller.signal : undefined
-        });
-        if (!response.ok) throw new Error('No se pudo conectar con el servicio.');
-        return response.json();
-      } catch (error) {
-        if (error?.name === 'AbortError') {
-          throw new Error('La conexión tardó demasiado. Intenta de nuevo.');
-        }
-        throw error;
-      } finally {
-        if (timeoutId) clearTimeout(timeoutId);
-      }
-    }
-
-    async function cargarClienteDesdeServidor(identificador, options = {}) {
-      const {
-        forceDashboard = false,
-        silent = false,
-        preserveActiveTab = false
-      } = options;
-
-      const shouldPreserveTab = preserveActiveTab || !appView.classList.contains('hidden');
-      const activeTabId = shouldPreserveTab ? state.activeTabId || getActiveTabId() : 'tabHome';
-      const previousPoints = state.cliente ? safeNumber(state.cliente.puntos, 0) : null;
-      const previousRewardAvailable = String(state.cliente?.premio_disponible || 'NO').toUpperCase() === 'SI';
-
-      const data = await apiRequest({ action: 'getClientAny', input: identificador });
-      if (!data || data.ok === false || !data.cliente) {
-        throw new Error(data?.message || 'No encontramos esa cuenta.');
+        btnCanjear.classList.remove('btn-reward');
       }
 
-      state.isOffline = false;
-      state.consecutivePollErrors = 0;
-      state.cliente = data.cliente;
-      state.movimientos = Array.isArray(data.movimientos) ? data.movimientos : [];
+      renderCups(points, state.metaPuntos);
+    }
 
-      const inlineConfig = {
-        meta_puntos: data.meta_puntos ?? data.config?.meta_puntos ?? data.cliente?.meta_puntos,
-        recompensa: data.recompensa ?? data.config?.recompensa,
-        nombre_negocio: data.nombre_negocio ?? data.config?.nombre_negocio
-      };
-      const hasInlineConfig = inlineConfig.meta_puntos != null || inlineConfig.recompensa || inlineConfig.nombre_negocio;
+    async function apiGet(params) {
+      const url = `${API_URL}?${new URLSearchParams(params).toString()}`;
+      const res = await fetch(url);
+      return res.json();
+    }
 
-      if (hasInlineConfig) {
-        applyDashboardConfig(inlineConfig);
-        saveDashboardCache({
-          meta_puntos: state.metaPuntos,
-          recompensa: state.recompensa,
-          nombre_negocio: state.negocio
-        });
-      }
-
-      if (forceDashboard || !hasInlineConfig || !state.dashboardLoaded) {
-        try {
-          await loadDashboardConfig(forceDashboard);
-        } catch {
-          const cached = getDashboardCache();
-          if (cached?.config) {
-            applyDashboardConfig(cached.config);
-          } else if (!hasInlineConfig) {
-            applyDashboardConfig({});
-          }
-        }
-      }
-
-      saveLocalCliente(state.cliente);
-      saveCache({
-        cliente: state.cliente,
-        movimientos: state.movimientos,
-        config: {
-          meta_puntos: state.metaPuntos,
-          recompensa: state.recompensa,
-          nombre_negocio: state.negocio
-        }
+    async function apiPost(payload) {
+      const form = new URLSearchParams();
+      Object.keys(payload).forEach(key => {
+        form.append(key, payload[key] ?? '');
       });
 
-      const currentPoints = safeNumber(state.cliente?.puntos, 0);
-      const shouldAnimateIncrease = previousPoints !== null && currentPoints > previousPoints;
-
-      renderCliente({
-        previousPoints,
-        previousRewardAvailable,
-        animatePoints: shouldAnimateIncrease
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: form
       });
 
-      if (!silent || state.bootstrappingFastSession) {
+      return res.json();
+    }
+
+    async function loadClient() {
+      state.id = qs('id');
+
+      if (!state.id) {
+        loadingView.innerHTML = `
+          <div>
+            <strong>QR inválido</strong>
+            <p>No se encontró el ID del cliente.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente = {
+          id_cliente: state.id,
+          nombre: 'Ana López',
+          telefono: '5551234',
+          correo: 'ana@demo.com',
+          puntos: 4,
+          fecha_registro: new Date().toISOString(),
+          ultima_visita: new Date(Date.now() - 86400000).toISOString(),
+          premio_disponible: 'NO',
+          qr_id: state.id,
+          estado: 'ACTIVO'
+        };
+        state.metaPuntos = 5;
+        state.recompensa = 'Recompensa';
+        state.negocio = 'Panel de validación';
+        renderCliente();
         showApp();
-      }
-
-      const hasLockedPreferredTab = Date.now() < state.navInteraction.lockTabUntil && state.navInteraction.preferredTabId && tabPanels.some((panel) => panel.id === state.navInteraction.preferredTabId);
-      const liveTabId = getActiveTabId();
-      const tabToRestore = hasLockedPreferredTab
-        ? state.navInteraction.preferredTabId
-        : (shouldPreserveTab ? (liveTabId || state.activeTabId || activeTabId) : 'tabHome');
-
-      setActiveTab(tabToRestore, { animate: false });
-      startAutoRefresh();
-    }
-
-    async function crearCuenta() {
-      const nombre = safeText(nombreInput.value, '');
-      const contacto = safeText(contactoInput.value, '');
-
-      if (!nombre) {
-        showRegister('Ingresa tu nombre para crear tu tarjeta.');
-        nombreInput.focus();
+        showStatus('Modo demo activo.', 'info');
         return;
       }
 
-      const contactoValidado = parseContactoGuatemala(contacto);
-      if (!contactoValidado.ok) {
-        showRegister(contactoValidado.message);
-        contactoInput.focus();
+      try {
+        const data = await apiGet({ action: 'getClient', id: state.id });
+        if (!data.ok) throw new Error(data.message || 'No se encontró el cliente');
+
+        state.cliente = data.cliente;
+        applyServerData(data);
+
+        renderCliente();
+        showApp();
+      } catch (error) {
+        loadingView.innerHTML = `
+          <div>
+            <strong>No se pudo cargar</strong>
+            <p>${error.message || 'Ocurrió un problema al leer el cliente.'}</p>
+          </div>
+        `;
+      }
+    }
+
+    async function refreshClient() {
+      hideStatus();
+
+      if (!state.id || API_URL.includes('PEGAR_AQUI')) {
+        renderCliente();
         return;
       }
 
-      btnCrearCuenta.disabled = true;
-      btnCrearCuenta.textContent = 'Creando...';
-
       try {
-        const esCorreo = contactoValidado.type === 'correo';
-        const contactoNormalizado = contactoValidado.value;
+        const data = await apiGet({ action: 'getClient', id: state.id });
+        if (!data.ok) throw new Error(data.message || 'No se pudo actualizar');
 
-        const data = await apiRequest({
-          action: 'registerClient',
-          nombre,
-          telefono: esCorreo ? '' : contactoNormalizado,
-          correo: esCorreo ? contactoNormalizado : ''
-        });
+        state.cliente = data.cliente;
+        applyServerData(data);
 
-        if (!data || data.ok === false || !data.cliente) {
-          throw new Error(data?.message || 'No se pudo crear la cuenta.');
-        }
-
-        const clienteRapido = buildFastRegisterCliente(nombre, contactoNormalizado, data.cliente);
-        hydrateClienteSession({ cliente: clienteRapido, movimientos: [] }, {
-          syncLabel: 'Preparando tu tarjeta...'
-        });
-        clearFormInputs();
-
-        backgroundSyncCliente(clienteRapido.id_cliente || contactoNormalizado)
-          .catch((error) => {
-            showRegister(error.message || 'Ocurrió un error al crear la cuenta.');
-          });
+        renderCliente();
       } catch (error) {
-        showRegister(error.message || 'Ocurrió un error al crear la cuenta.');
-      } finally {
-        btnCrearCuenta.disabled = false;
-        btnCrearCuenta.textContent = 'Crear cuenta';
+        showStatus(error.message || 'No se pudo actualizar.', 'error');
       }
     }
 
-    async function ingresarCuenta() {
-      const identificador = safeText(loginIdCliente.value, '');
-      const identificadorValidado = parseContactoGuatemala(identificador);
-      if (!identificadorValidado.ok) {
-        showLoginFeedback(identificadorValidado.message);
-        loginIdCliente.focus();
+    async function confirmPoint() {
+      hideStatus();
+      const pin = pinInput.value.trim();
+      const usuario = 'Caja 1';
+
+      if (!pin) {
+        showStatus('Ingresa el PIN.', 'error');
+        pinInput.focus();
         return;
       }
 
-      btnIngresarCuenta.disabled = true;
-      btnIngresarCuenta.textContent = 'Ingresando...';
-
-      const identificadorNormalizado = identificadorValidado.value;
-      const snapshot = getBestLocalSnapshotForLogin(identificadorNormalizado);
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente.puntos = Number(state.cliente.puntos || 0) + 1;
+        if (state.cliente.puntos >= state.metaPuntos) state.cliente.premio_disponible = 'SI';
+        state.cliente.ultima_visita = new Date().toISOString();
+        renderCliente();
+        pinInput.value = '';
+        showStatus(
+          state.cliente.premio_disponible === 'SI'
+            ? 'Punto agregado. Recompensa disponible.'
+            : 'Punto agregado.',
+          'ok'
+        );
+        return;
+      }
 
       try {
-        if (snapshot?.cliente) {
-          closeLoginModal();
-          hydrateClienteSession(snapshot, {
-            syncLabel: 'Actualizando tarjeta...',
-            preserveActiveTab: false
-          });
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = 'Guardando...';
 
-          backgroundSyncCliente(snapshot.cliente.id_cliente || identificadorNormalizado)
-            .catch((error) => {
-              showLoginFeedback(error.message || 'No se pudo recuperar la cuenta.');
-              showRegister();
-            });
-          return;
-        }
-
-        await cargarClienteDesdeServidor(identificadorNormalizado);
-      } catch (error) {
-        showLoginFeedback(error.message || 'No se pudo recuperar la cuenta.');
-      } finally {
-        btnIngresarCuenta.disabled = false;
-        btnIngresarCuenta.textContent = 'Ingresar';
-      }
-    }
-
-    async function refreshCliente() {
-      if (!state.cliente?.id_cliente) return;
-      btnRefresh.disabled = true;
-      btnRefresh.textContent = 'Actualizando...';
-      try {
-        await cargarClienteDesdeServidor(state.cliente.id_cliente, { preserveActiveTab: true });
-      } catch (error) {
-        alert(error.message || 'No se pudo actualizar la tarjeta.');
-      } finally {
-        btnRefresh.disabled = false;
-        btnRefresh.textContent = 'Actualizar';
-      }
-    }
-
-    function stopAutoRefresh() {
-      if (state.pollTimer) {
-        clearInterval(state.pollTimer);
-        state.pollTimer = null;
-      }
-      state.pollInFlight = false;
-    }
-
-    function startAutoRefresh() {
-      if (!state.cliente?.id_cliente || state.pollTimer) return;
-
-      state.pollTimer = setInterval(async () => {
-        if (document.hidden || state.pollInFlight || !state.cliente?.id_cliente || state.isOffline) return;
-
-        state.pollInFlight = true;
-        try {
-          await cargarClienteDesdeServidor(state.cliente.id_cliente, {
-            silent: true,
-            preserveActiveTab: true
-          });
-          state.consecutivePollErrors = 0;
-        } catch (error) {
-          state.consecutivePollErrors += 1;
-          console.warn('Auto refresh paused on error:', error?.message || error);
-          if (state.consecutivePollErrors >= 3) {
-            stopAutoRefresh();
-            setSyncStatus(false);
-          }
-        } finally {
-          state.pollInFlight = false;
-        }
-      }, state.pollIntervalMs);
-    }
-
-    function logoutLocal() {
-      stopAutoRefresh();
-      clearLocalCliente();
-      clearCache();
-      state.cliente = null;
-      state.movimientos = [];
-      state.qrPendingId = null;
-      state.qrRenderedId = null;
-      clearAllSoundTimers();
-      state.sound.pointLastPlayedAt = 0;
-      state.sound.rewardLastPlayedAt = 0;
-      state.sound.lastPoints = 0;
-      state.sound.rewardPlayed = false;
-      ui.qrImage.removeAttribute('src');
-      state.dashboardLoaded = false;
-      clearFormInputs();
-      state.navInteraction.preferredTabId = 'tabHome';
-      setSyncStatus(false);
-      showRegister();
-    }
-
-    async function bootstrap() {
-      preloadSoundEffects();
-
-      const localCliente = getLocalCliente();
-      const cached = getCache();
-
-      if (localCliente?.id_cliente) {
-        const sameCachedClient = cached?.cliente?.id_cliente && cached.cliente.id_cliente === localCliente.id_cliente;
-        const snapshot = sameCachedClient
-          ? {
-              cliente: cached.cliente,
-              movimientos: Array.isArray(cached.movimientos) ? cached.movimientos : [],
-              config: cached.config || null
-            }
-          : {
-              cliente: localCliente,
-              movimientos: Array.isArray(cached?.movimientos) ? cached.movimientos : [],
-              config: cached?.config || null
-            };
-
-        state.bootstrappingFastSession = hydrateClienteSession(snapshot, {
-          syncLabel: 'Actualizando tarjeta...',
-          preserveActiveTab: false
+        const data = await apiPost({
+          action: 'confirmPoint',
+          id: state.id,
+          pin,
+          usuario
         });
 
-        if (state.bootstrappingFastSession) {
-          state.navInteraction.preferredTabId = 'tabHome';
-          backgroundSyncCliente(localCliente.id_cliente, {
-            forceDashboard: !sameCachedClient
-          })
-            .catch(() => {
-              clearLocalCliente();
-              clearCache();
-              showRegister();
-            })
-            .finally(() => {
-              state.bootstrappingFastSession = false;
-            });
-          return;
-        }
+        if (!data.ok) throw new Error(data.message || 'No se pudo confirmar el punto');
 
-        try {
-          await cargarClienteDesdeServidor(localCliente.id_cliente);
-          return;
-        } catch {
-          clearLocalCliente();
-          clearCache();
-        }
+        state.cliente = {
+          ...state.cliente,
+          ...data.cliente,
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
+        };
+        applyServerData(data);
+
+        renderCliente();
+        pinInput.value = '';
+        showStatus(data.message || 'Punto agregado.', 'ok');
+      } catch (error) {
+        showStatus(error.message || 'Ocurrió un error al confirmar el punto.', 'error');
+      } finally {
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = 'Confirmar punto';
+      }
+    }
+
+    async function redeemReward() {
+      hideStatus();
+      const pin = pinInput.value.trim();
+      const usuario = 'Caja 1';
+
+      if (!pin) {
+        showStatus('Ingresa el PIN.', 'error');
+        pinInput.focus();
+        return;
       }
 
-      showRegister();
+      if (API_URL.includes('PEGAR_AQUI')) {
+        state.cliente.puntos = 0;
+        state.cliente.premio_disponible = 'NO';
+        state.cliente.ultima_visita = new Date().toISOString();
+        renderCliente();
+        btnCanjear.classList.remove('btn-reward');
+        pinInput.value = '';
+        showStatus('Recompensa canjeada.', 'ok');
+        return;
+      }
+
+      try {
+        btnCanjear.disabled = true;
+        btnCanjear.textContent = 'Canjeando...';
+
+        const data = await apiPost({
+          action: 'redeemReward',
+          id: state.id,
+          pin,
+          usuario
+        });
+
+        if (!data.ok) throw new Error(data.message || 'No se pudo canjear la recompensa');
+
+        state.cliente = {
+          ...state.cliente,
+          ...data.cliente,
+          ultima_visita: data.cliente?.ultima_visita || new Date().toISOString()
+        };
+        applyServerData(data);
+
+        renderCliente();
+        btnCanjear.classList.remove('btn-reward');
+        pinInput.value = '';
+        showStatus(data.message || 'Recompensa canjeada.', 'ok');
+      } catch (error) {
+        showStatus(error.message || 'Ocurrió un error al canjear la recompensa.', 'error');
+      } finally {
+        btnCanjear.disabled = false;
+        btnCanjear.textContent = 'Canjear recompensa';
+      }
     }
 
-    btnCrearCuenta.addEventListener('click', crearCuenta);
-    btnYaTengoCuenta.addEventListener('click', openLoginModal);
-    btnIngresarCuenta.addEventListener('pointerdown', (event) => {
-      event.preventDefault();
-      ingresarCuenta();
+    btnVerPin.addEventListener('click', () => {
+      const isPassword = pinInput.type === 'password';
+      pinInput.type = isPassword ? 'text' : 'password';
+      btnVerPin.textContent = isPassword ? 'Ocultar' : 'Ver';
     });
 
-    btnIngresarCuenta.addEventListener('click', (event) => {
-      event.preventDefault();
-    });
-    btnCerrarModal.addEventListener('click', closeLoginModal);
-    btnCancelarModal.addEventListener('click', closeLoginModal);
-    btnSalir.addEventListener('click', logoutLocal);
-    btnRefresh.addEventListener('click', refreshCliente);
-    btnBorrarCuenta.addEventListener('click', logoutLocal);
+    btnRecargar.addEventListener('click', refreshClient);
+    btnConfirmar.addEventListener('click', confirmPoint);
+    btnCanjear.addEventListener('click', redeemReward);
 
-    loginModal.addEventListener('click', (event) => {
-      if (event.target === loginModal) closeLoginModal();
-    });
+    document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', event => event.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', event => event.preventDefault(), { passive: false });
 
-    function navigateToTabFromButton(btn) {
-      if (!btn?.dataset?.tab) return;
+    document.addEventListener('wheel', event => {
+      if (event.ctrlKey) event.preventDefault();
+    }, { passive: false });
 
-      resetSwipeState();
-      state.swipe.navigating = false;
-      state.swipe.cooldownUntil = Date.now() + 1400;
-      state.navInteraction.lockTabUntil = Date.now() + 1800;
-      state.navInteraction.preferredTabId = btn.dataset.tab;
-
-      const currentIndex = getTabIndex(getActiveTabId());
-      const nextIndex = getTabIndex(btn.dataset.tab);
-      setActiveTab(btn.dataset.tab, {
-        direction: nextIndex < currentIndex ? 'prev' : 'next',
-        animate: true
-      });
-    }
-
-    navButtons.forEach((btn) => {
-      btn.addEventListener('pointerdown', (event) => {
-        if (event.pointerType === 'mouse') return;
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', event => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
         event.preventDefault();
-        event.stopPropagation();
-        state.navInteraction.suppressClickUntil = Date.now() + 800;
-        navigateToTabFromButton(btn);
-      });
-
-      btn.addEventListener('click', (event) => {
-        if (Date.now() < state.navInteraction.suppressClickUntil) {
-          event.preventDefault();
-          event.stopPropagation();
-          return;
-        }
-        navigateToTabFromButton(btn);
-      });
-    });
-
-    [nombreInput, contactoInput].forEach((input) => {
-      input.addEventListener('input', () => {
-        registerFeedback.classList.add('hidden');
-      });
-    });
-
-    loginIdCliente.addEventListener('input', () => {
-      loginFeedback.classList.add('hidden');
-    });
-
-    loginIdCliente.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') ingresarCuenta();
-    });
-
-    loginIdCliente.addEventListener('focus', () => {
-      loginModal.querySelector('.modal-card')?.classList.add('keyboard-open');
-      ensureLoginInputVisible();
-    });
-
-    loginIdCliente.addEventListener('blur', () => {
-      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
-    });
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        if (!loginModal.classList.contains('hidden') && document.activeElement === loginIdCliente) {
-          ensureLoginInputVisible();
-        }
-      });
-    }
-
-    contactoInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') crearCuenta();
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) return;
-      if (state.cliente?.id_cliente && !state.isOffline) {
-        cargarClienteDesdeServidor(state.cliente.id_cliente, {
-          silent: true,
-          preserveActiveTab: true
-        }).catch(() => {});
       }
-    });
+      lastTouchEnd = now;
+    }, { passive: false });
 
-    window.addEventListener('online', () => {
-      state.isOffline = false;
-      state.consecutivePollErrors = 0;
-      if (state.cliente?.id_cliente) {
-        backgroundSyncCliente(state.cliente.id_cliente, {
-          forceDashboard: true,
-          preserveActiveTab: true
-        }).catch(() => {});
-        startAutoRefresh();
-      }
-    });
-
-    window.addEventListener('offline', () => {
-      state.isOffline = true;
-      setSyncStatus(false);
-      stopAutoRefresh();
-    });
-
-    attachAudioUnlockHandlers();
-    setupSwipeNavigation();
-    bootstrap();
+    loadClient();
   </script>
 </body>
 </html>
