@@ -1602,7 +1602,11 @@
         preferredTabId: 'tabHome'
       },
       syncStatusTimer: null,
-      bootstrappingFastSession: false
+      bootstrappingFastSession: false,
+      syncPromise: null,
+      syncTargetId: '',
+      consecutivePollErrors: 0,
+      isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false
     };
 
     const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
@@ -2069,19 +2073,34 @@
     }
 
     function backgroundSyncCliente(identificador, options = {}) {
-      return cargarClienteDesdeServidor(identificador, {
+      const targetId = String(identificador || '').trim();
+      if (!targetId) return Promise.resolve(false);
+
+      if (state.syncPromise && state.syncTargetId === targetId) {
+        return state.syncPromise;
+      }
+
+      state.syncTargetId = targetId;
+      state.syncPromise = cargarClienteDesdeServidor(targetId, {
         silent: true,
         preserveActiveTab: true,
         ...options
       })
         .then(() => {
+          state.consecutivePollErrors = 0;
           setSyncStatus(true, 'Listo');
           return true;
         })
         .catch((error) => {
           setSyncStatus(false);
           throw error;
+        })
+        .finally(() => {
+          state.syncPromise = null;
+          state.syncTargetId = '';
         });
+
+      return state.syncPromise;
     }
 
     function safeText(value, fallback = '—') {
@@ -2295,11 +2314,24 @@
         return cached.config;
       }
 
-      const dashboard = await apiRequest({ action: 'getDashboard' });
-      if (dashboard?.config) {
-        applyDashboardConfig(dashboard.config);
-        saveDashboardCache(dashboard.config);
-        return dashboard.config;
+      try {
+        const dashboard = await apiRequest({ action: 'getDashboard' });
+        if (dashboard?.config) {
+          applyDashboardConfig(dashboard.config);
+          saveDashboardCache(dashboard.config);
+          return dashboard.config;
+        }
+      } catch (error) {
+        if (cached?.config) {
+          applyDashboardConfig(cached.config);
+          return cached.config;
+        }
+        throw error;
+      }
+
+      if (cached?.config) {
+        applyDashboardConfig(cached.config);
+        return cached.config;
       }
 
       throw new Error('No se pudo cargar la configuración.');
@@ -2545,9 +2577,27 @@
         }
       });
 
-      const response = await fetch(url.toString(), { method: 'GET' });
-      if (!response.ok) throw new Error('No se pudo conectar con el servicio.');
-      return response.json();
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timeoutId = controller
+        ? setTimeout(() => controller.abort(), 12000)
+        : null;
+
+      try {
+        const response = await fetch(url.toString(), {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller ? controller.signal : undefined
+        });
+        if (!response.ok) throw new Error('No se pudo conectar con el servicio.');
+        return response.json();
+      } catch (error) {
+        if (error?.name === 'AbortError') {
+          throw new Error('La conexión tardó demasiado. Intenta de nuevo.');
+        }
+        throw error;
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+      }
     }
 
     async function cargarClienteDesdeServidor(identificador, options = {}) {
@@ -2567,17 +2617,37 @@
         throw new Error(data?.message || 'No encontramos esa cuenta.');
       }
 
+      state.isOffline = false;
+      state.consecutivePollErrors = 0;
       state.cliente = data.cliente;
       state.movimientos = Array.isArray(data.movimientos) ? data.movimientos : [];
 
-      try {
-        await loadDashboardConfig(forceDashboard);
-      } catch {
-        const cached = getDashboardCache();
-        if (cached?.config) {
-          applyDashboardConfig(cached.config);
-        } else {
-          applyDashboardConfig({});
+      const inlineConfig = {
+        meta_puntos: data.meta_puntos ?? data.config?.meta_puntos ?? data.cliente?.meta_puntos,
+        recompensa: data.recompensa ?? data.config?.recompensa,
+        nombre_negocio: data.nombre_negocio ?? data.config?.nombre_negocio
+      };
+      const hasInlineConfig = inlineConfig.meta_puntos != null || inlineConfig.recompensa || inlineConfig.nombre_negocio;
+
+      if (hasInlineConfig) {
+        applyDashboardConfig(inlineConfig);
+        saveDashboardCache({
+          meta_puntos: state.metaPuntos,
+          recompensa: state.recompensa,
+          nombre_negocio: state.negocio
+        });
+      }
+
+      if (forceDashboard || !hasInlineConfig || !state.dashboardLoaded) {
+        try {
+          await loadDashboardConfig(forceDashboard);
+        } catch {
+          const cached = getDashboardCache();
+          if (cached?.config) {
+            applyDashboardConfig(cached.config);
+          } else if (!hasInlineConfig) {
+            applyDashboardConfig({});
+          }
         }
       }
 
@@ -2734,7 +2804,7 @@
       if (!state.cliente?.id_cliente || state.pollTimer) return;
 
       state.pollTimer = setInterval(async () => {
-        if (document.hidden || state.pollInFlight || !state.cliente?.id_cliente) return;
+        if (document.hidden || state.pollInFlight || !state.cliente?.id_cliente || state.isOffline) return;
 
         state.pollInFlight = true;
         try {
@@ -2742,8 +2812,14 @@
             silent: true,
             preserveActiveTab: true
           });
+          state.consecutivePollErrors = 0;
         } catch (error) {
+          state.consecutivePollErrors += 1;
           console.warn('Auto refresh paused on error:', error?.message || error);
+          if (state.consecutivePollErrors >= 3) {
+            stopAutoRefresh();
+            setSyncStatus(false);
+          }
         } finally {
           state.pollInFlight = false;
         }
@@ -2917,12 +2993,30 @@
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) return;
-      if (state.cliente?.id_cliente) {
+      if (state.cliente?.id_cliente && !state.isOffline) {
         cargarClienteDesdeServidor(state.cliente.id_cliente, {
           silent: true,
           preserveActiveTab: true
         }).catch(() => {});
       }
+    });
+
+    window.addEventListener('online', () => {
+      state.isOffline = false;
+      state.consecutivePollErrors = 0;
+      if (state.cliente?.id_cliente) {
+        backgroundSyncCliente(state.cliente.id_cliente, {
+          forceDashboard: true,
+          preserveActiveTab: true
+        }).catch(() => {});
+        startAutoRefresh();
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      state.isOffline = true;
+      setSyncStatus(false);
+      stopAutoRefresh();
     });
 
     attachAudioUnlockHandlers();
