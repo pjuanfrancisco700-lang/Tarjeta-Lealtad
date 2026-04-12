@@ -851,6 +851,7 @@
       color: var(--muted);
       line-height: 1.42;
       margin-top: 0;
+      text-align: center;
     }
 
     .feedback {
@@ -858,6 +859,7 @@
       border-radius: 16px;
       font-size: 14px;
       line-height: 1.4;
+      text-align: center;
     }
 
     .feedback.error {
@@ -996,35 +998,37 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       justify-content: center;
-      padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+      padding: 0 12px env(safe-area-inset-bottom);
       z-index: 50;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
     .modal-card {
-      width: min(100%, 400px);
-      margin: auto 0;
-      padding: 16px 16px 14px;
-      border-radius: 26px;
-      background: rgba(247, 245, 242, 0.96);
-      border: 1px solid rgba(201, 184, 166, 0.42);
-      box-shadow:
-        0 20px 44px rgba(30, 27, 24, 0.16),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: grid;
-      gap: 10px;
-    }
+  width: min(100%, 400px);
+  margin: 0;
+  padding: 16px 16px 14px;
+  border-radius: 26px 26px 0 0;
+  background: rgba(247, 245, 242, 0.96);
+  border: 1px solid rgba(201, 184, 166, 0.42);
+  box-shadow:
+    0 20px 44px rgba(30, 27, 24, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: grid;
+  gap: 10px;
+  transition: transform 0.25s ease;
+  align-self: flex-end;
+}
 
     .modal-card.keyboard-open {
-      margin-top: max(10px, env(safe-area-inset-top));
+      margin-top: 0;
       margin-bottom: 0;
       transform: none;
-      max-height: calc(100dvh - 16px - env(safe-area-inset-top));
+      max-height: calc(100dvh - env(safe-area-inset-bottom));
       overflow-y: auto;
       padding-top: 14px;
       padding-bottom: 12px;
@@ -1378,7 +1382,7 @@
             <button class="secondary-btn" id="btnCancelarModal" type="button">Cancelar</button>
           </div>
 
-          <p class="center-note" style="margin-top:0;">Puedes ingresar únicamente con tu teléfono de 8 dígitos o tu correo registrado.</p>
+          <p class="register-note">Accede con tu número o correo registrado</p>
         </div>
       </div>
 
@@ -1973,7 +1977,7 @@
 
       return {
         ok: false,
-        message: 'Solo se permiten teléfonos de Guatemala de 8 dígitos o correos válidos.'
+        message: 'Ingresa un teléfono o correo válido.'
       };
     }
 
