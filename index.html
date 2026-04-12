@@ -1000,43 +1000,41 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: max(10px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+      padding: max(16px, env(safe-area-inset-top)) 12px max(16px, env(safe-area-inset-bottom));
       z-index: 50;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
-    .modal-overlay.keyboard-open {
-      align-items: flex-end;
-      padding: 0 12px env(safe-area-inset-bottom);
-    }
-
     .modal-card {
-      width: min(100%, 400px);
-      margin: 0;
-      padding: 16px 16px 14px;
-      border-radius: 26px;
-      background: rgba(247, 245, 242, 0.96);
-      border: 1px solid rgba(201, 184, 166, 0.42);
-      box-shadow:
-        0 20px 44px rgba(30, 27, 24, 0.16),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      display: grid;
-      gap: 10px;
-      transition: transform 0.25s ease;
-    }
+  width: min(100%, 400px);
+  margin: auto 0;
+  padding: 16px 16px 14px;
+  border-radius: 26px;
+  background: rgba(247, 245, 242, 0.96);
+  border: 1px solid rgba(201, 184, 166, 0.42);
+  box-shadow:
+    0 20px 44px rgba(30, 27, 24, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: grid;
+  gap: 10px;
+  transition: transform 0.25s ease;
+  align-self: center;
+  max-height: min(560px, calc(100dvh - max(32px, env(safe-area-inset-top) + env(safe-area-inset-bottom))));
+  overflow-y: auto;
+}
 
     .modal-card.keyboard-open {
-      margin-top: 0;
-      margin-bottom: 0;
+      margin: auto 0;
       transform: none;
-      max-height: calc(100dvh - env(safe-area-inset-bottom));
+      max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
       overflow-y: auto;
       padding-top: 14px;
       padding-bottom: 12px;
       gap: 8px;
+      align-self: center;
     }
 
     .modal-head {
@@ -1836,24 +1834,33 @@
     function ensureLoginInputVisible() {
       if (loginModal.classList.contains('hidden')) return;
 
+      const modalCard = loginModal.querySelector('.modal-card');
+      if (!modalCard) return;
+
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          loginIdCliente.scrollIntoView({
-            block: 'center',
-            inline: 'nearest',
-            behavior: 'smooth'
-          });
+          const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+          const cardHeight = modalCard.offsetHeight;
+          const availableTop = Math.max(16, (viewportHeight - cardHeight) / 2);
+          loginModal.style.alignItems = 'flex-start';
+          loginModal.scrollTop = 0;
+          modalCard.style.marginTop = `${availableTop}px`;
+          modalCard.style.marginBottom = '16px';
         });
       });
     }
 
     function openLoginModal() {
       loginModal.classList.remove('hidden');
-      loginModal.classList.remove('keyboard-open');
+      loginModal.style.alignItems = 'center';
+      const modalCard = loginModal.querySelector('.modal-card');
+      if (modalCard) {
+        modalCard.style.marginTop = '0';
+        modalCard.style.marginBottom = '0';
+      }
       loginFeedback.textContent = '';
       loginFeedback.className = 'feedback error hidden';
       loginIdCliente.value = '';
-      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
 
       setTimeout(() => {
         loginIdCliente.focus({ preventScroll: true });
@@ -1863,11 +1870,16 @@
 
     function closeLoginModal() {
       loginModal.classList.add('hidden');
-      loginModal.classList.remove('keyboard-open');
+      loginModal.style.alignItems = 'center';
+      const modalCard = loginModal.querySelector('.modal-card');
+      if (modalCard) {
+        modalCard.classList.remove('keyboard-open');
+        modalCard.style.marginTop = '0';
+        modalCard.style.marginBottom = '0';
+      }
       loginFeedback.textContent = '';
       loginFeedback.className = 'feedback error hidden';
       loginIdCliente.value = '';
-      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
     }
 
     function showLoginFeedback(message, type = 'error') {
@@ -2982,14 +2994,18 @@
     });
 
     loginIdCliente.addEventListener('focus', () => {
-      loginModal.classList.add('keyboard-open');
       loginModal.querySelector('.modal-card')?.classList.add('keyboard-open');
       ensureLoginInputVisible();
     });
 
     loginIdCliente.addEventListener('blur', () => {
-      loginModal.classList.remove('keyboard-open');
-      loginModal.querySelector('.modal-card')?.classList.remove('keyboard-open');
+      const modalCard = loginModal.querySelector('.modal-card');
+      modalCard?.classList.remove('keyboard-open');
+      loginModal.style.alignItems = 'center';
+      if (modalCard) {
+        modalCard.style.marginTop = '0';
+        modalCard.style.marginBottom = '0';
+      }
     });
 
     if (window.visualViewport) {
