@@ -471,7 +471,6 @@
       line-height: 1.35;
     }
 
-
     /* BOTÓN CANJEAR ACTIVO (premio disponible) */
     .btn-reward {
       background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
@@ -711,8 +710,13 @@
         ? 'Listo para canjear.'
         : `Faltan ${faltan} ${faltan === 1 ? 'punto' : 'puntos'}.`;
 
-      btnCanjear.classList.toggle('hidden', !premioDisponible);
+      /* CAMBIO PEDIDO:
+         - Si hay premio: ocultar Confirmar punto
+         - Mostrar Canjear recompensa en verde con palpitar
+         - Cuando ya no hay premio, todo vuelve a la normalidad
+      */
       btnConfirmar.classList.toggle('hidden', premioDisponible);
+      btnCanjear.classList.toggle('hidden', !premioDisponible);
 
       if (premioDisponible) {
         btnCanjear.classList.add('btn-reward');
